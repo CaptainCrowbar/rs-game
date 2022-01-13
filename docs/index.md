@@ -25,5 +25,5 @@ Other libraries required:
 ## Index
 
 * [Dice](dice.html)
-* [English language tools](dice.html)
+* [English language tools](english.html)
 * [Version information](version.html)
