@@ -15,9 +15,12 @@ Collection of vaguely game-related code.
 
 Other libraries required:
 
-[My formatting library](https://github.com/CaptainCrowbar/rs-format)
-[My scientific library](https://github.com/CaptainCrowbar/rs-sci)
-[My unit test library](https://github.com/CaptainCrowbar/rs-unit-test)
+* [My formatting library](https://github.com/CaptainCrowbar/rs-format)
+* [My regex library](https://github.com/CaptainCrowbar/rs-regex)
+* [My scientific library](https://github.com/CaptainCrowbar/rs-sci)
+* [My template library](https://github.com/CaptainCrowbar/rs-tl)
+* [My unit test library](https://github.com/CaptainCrowbar/rs-unit-test)
+* [PCRE2](http://www.pcre.org/)
 
 ## Index
 
