@@ -97,6 +97,19 @@ Black and white colours.
 
 ```c++
 Hexmap::Hexmap();
+```
+
+The default constructor creates an empty hexmap.
+
+```c++
+Hexmap::Hexmap(std::initializer_list<...> list);
+```
+
+Constructor from an initializer list. The list element type is private; it can
+be constructed from the same arguments as the `set()` function. The
+initializer list constructor is equivalent to a series of calls to `set()`.
+
+```c++
 Hexmap::Hexmap(const Hexmap& hm);
 Hexmap::Hexmap(Hexmap&& hm) noexcept;
 Hexmap::~Hexmap() noexcept;
@@ -104,7 +117,7 @@ Hexmap& Hexmap::operator=(const Hexmap& hm);
 Hexmap& Hexmap::operator=(Hexmap&& hm) noexcept;
 ```
 
-Standard life cycle functions.
+Other life cycle functions.
 
 ### Hexmap geometry queries
 
