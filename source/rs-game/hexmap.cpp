@@ -10,6 +10,7 @@
 #include <set>
 
 using namespace RS::Format;
+using namespace RS::Game::Detail;
 using namespace RS::Graphics::Core;
 
 namespace RS::Game {
@@ -65,7 +66,14 @@ namespace RS::Game {
 
     }
 
-    using namespace Detail;
+    Hexmap::Hexmap(std::initializer_list<init_hex> list) {
+        for (auto& item: list) {
+            if (item.colour.has_value())
+                set(item.where, item.label, *item.colour);
+            else
+                set(item.where, item.label);
+        }
+    }
 
     Hexmap::hexlist Hexmap::all() const {
         hexlist vec;
