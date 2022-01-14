@@ -20,6 +20,11 @@ int main(int argc, char** argv) {
     UNIT_TEST(rs_game_english_pluralization)
     UNIT_TEST(rs_game_english_lorem_ipsum)
 
+    // hexmap-test.cpp
+    UNIT_TEST(rs_game_hexmap_coordinate_operations)
+    UNIT_TEST(rs_game_hexmap_adjacency_properties)
+    UNIT_TEST(rs_game_hexmap_ascii_art)
+
     // version-test.cpp
     UNIT_TEST(rs_game_version)
 

@@ -16,6 +16,7 @@ Collection of vaguely game-related code.
 Other libraries required:
 
 * [My formatting library](https://github.com/CaptainCrowbar/rs-format)
+* [My graphics core library](https://github.com/CaptainCrowbar/rs-graphics-core)
 * [My regex library](https://github.com/CaptainCrowbar/rs-regex)
 * [My scientific library](https://github.com/CaptainCrowbar/rs-sci)
 * [My template library](https://github.com/CaptainCrowbar/rs-tl)
@@ -26,4 +27,5 @@ Other libraries required:
 
 * [Dice](dice.html)
 * [English language tools](english.html)
+* [Hex mapping](hexmap.html)
 * [Version information](version.html)

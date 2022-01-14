@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.18)
 # and propagate the new version to version.hpp.
 
 project(rs-game
-    VERSION 0.1.1
+    VERSION 0.1.2
     LANGUAGES CXX
 )
 
@@ -46,7 +46,10 @@ function(check_for_library required library header repo)
 endfunction()
 
 check_for_library(yes rs-format rs-format.hpp https://github.com/CaptainCrowbar/rs-format)
+check_for_library(yes rs-graphics-core rs-graphics-core.hpp https://github.com/CaptainCrowbar/rs-graphics-core)
+check_for_library(yes rs-regex rs-regex.hpp https://github.com/CaptainCrowbar/rs-regex)
 check_for_library(yes rs-sci rs-sci.hpp https://github.com/CaptainCrowbar/rs-sci)
+check_for_library(yes rs-tl rs-tl.hpp https://github.com/CaptainCrowbar/rs-tl)
 check_for_library(no rs-unit-test rs-unit-test.hpp https://github.com/CaptainCrowbar/rs-unit-test)
 
 set(library rs-game)
@@ -57,11 +60,13 @@ find_package(Threads REQUIRED)
 add_library(${library} STATIC
     ${library}/dice.cpp
     ${library}/english.cpp
+    ${library}/hexmap.cpp
 )
 
 add_executable(${unittest}
     test/dice-test.cpp
     test/english-test.cpp
+    test/hexmap-test.cpp
     test/version-test.cpp
     test/unit-test.cpp
 )
