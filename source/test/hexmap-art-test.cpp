@@ -126,6 +126,30 @@ void test_rs_game_hexmap_ascii_art() {
 
 }
 
+void test_rs_game_hexmap_emoji_art() {
+
+    Hexmap map;
+
+    TRY(map.set({0,0}, "**", {5,3,1}));
+    TRY(map.set({1,0}, "🌏", {2,5,2}));
+    TRY(map.set({1,1}, "🌹", {2,2,5}));
+    TRY(map.set({1,2}, "🍎", {2,5,2}));
+    TRY(map.set({1,3}, "😀", {2,2,5}));
+    TRY(map.set({1,4}, "🚀", {2,5,2}));
+    TRY(map.set({1,5}, "🦊", {2,2,5}));
+
+    TEST_EQUAL(map.str(),
+        R"(    __    )" "\n"
+        R"( __/🌏\__ )" "\n"
+        R"(/🦊\__/🌹\)" "\n"
+        R"(\__/**\__/)" "\n"
+        R"(/🚀\__/🍎\)" "\n"
+        R"(\__/😀\__/)" "\n"
+        R"(   \__/   )" "\n"
+    );
+
+}
+
 void test_rs_game_hexmap_xterm_art() {
 
     Hexmap map;
