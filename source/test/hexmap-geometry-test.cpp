@@ -585,3 +585,79 @@ void test_rs_game_hexmap_adjacency_properties() {
         "[[1,4],[1,5]]");
 
 }
+
+void test_rs_game_hexmap_initializer_list() {
+
+    Hexmap map;
+
+    TRY((map = {
+        {{0,0}, "00"},
+        {{1,0}, "10"},
+        {{1,1}, "11"},
+        {{1,2}, "12"},
+        {{1,3}, "13"},
+        {{1,4}, "14"},
+        {{1,5}, "15"},
+    }));
+
+    TEST_EQUAL(map.rings(), 2);
+    TEST_EQUAL(map.size(), 7);
+
+    TEST_EQUAL(map.label({0,0}), "00");
+    TEST_EQUAL(map.label({1,0}), "10");
+    TEST_EQUAL(map.label({1,1}), "11");
+    TEST_EQUAL(map.label({1,2}), "12");
+    TEST_EQUAL(map.label({1,3}), "13");
+    TEST_EQUAL(map.label({1,4}), "14");
+    TEST_EQUAL(map.label({1,5}), "15");
+
+    TEST_EQUAL(map.str(),
+        R"(    __    )" "\n"
+        R"( __/10\__ )" "\n"
+        R"(/15\__/11\)" "\n"
+        R"(\__/00\__/)" "\n"
+        R"(/14\__/12\)" "\n"
+        R"(\__/13\__/)" "\n"
+        R"(   \__/   )" "\n"
+    );
+
+    TRY((map = {
+        {{0,0}, "aa", {5,3,1}},
+        {{1,0}, "ba", {2,5,2}},
+        {{1,1}, "bb", {2,2,5}},
+        {{1,2}, "bc", {2,5,2}},
+        {{1,3}, "bd", {2,2,5}},
+        {{1,4}, "be", {2,5,2}},
+        {{1,5}, "bf", {2,2,5}},
+    }));
+
+    TEST_EQUAL(map.rings(), 2);
+    TEST_EQUAL(map.size(), 7);
+
+    TEST_EQUAL(map.label({0,0}), "aa");
+    TEST_EQUAL(map.label({1,0}), "ba");
+    TEST_EQUAL(map.label({1,1}), "bb");
+    TEST_EQUAL(map.label({1,2}), "bc");
+    TEST_EQUAL(map.label({1,3}), "bd");
+    TEST_EQUAL(map.label({1,4}), "be");
+    TEST_EQUAL(map.label({1,5}), "bf");
+
+    TEST_EQUAL(map.colour({0,0}), Hexmap::xcolour(5,3,1));
+    TEST_EQUAL(map.colour({1,0}), Hexmap::xcolour(2,5,2));
+    TEST_EQUAL(map.colour({1,1}), Hexmap::xcolour(2,2,5));
+    TEST_EQUAL(map.colour({1,2}), Hexmap::xcolour(2,5,2));
+    TEST_EQUAL(map.colour({1,3}), Hexmap::xcolour(2,2,5));
+    TEST_EQUAL(map.colour({1,4}), Hexmap::xcolour(2,5,2));
+    TEST_EQUAL(map.colour({1,5}), Hexmap::xcolour(2,2,5));
+
+    TEST_EQUAL(map.str(),
+        R"(    __    )" "\n"
+        R"( __/ba\__ )" "\n"
+        R"(/bf\__/bb\)" "\n"
+        R"(\__/aa\__/)" "\n"
+        R"(/be\__/bc\)" "\n"
+        R"(\__/bd\__/)" "\n"
+        R"(   \__/   )" "\n"
+    );
+
+}

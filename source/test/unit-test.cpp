@@ -23,9 +23,11 @@ int main(int argc, char** argv) {
     // hexmap-geometry-test.cpp
     UNIT_TEST(rs_game_hexmap_coordinate_operations)
     UNIT_TEST(rs_game_hexmap_adjacency_properties)
+    UNIT_TEST(rs_game_hexmap_initializer_list)
 
     // hexmap-art-test.cpp
     UNIT_TEST(rs_game_hexmap_ascii_art)
+    UNIT_TEST(rs_game_hexmap_emoji_art)
     UNIT_TEST(rs_game_hexmap_xterm_art)
 
     // version-test.cpp
