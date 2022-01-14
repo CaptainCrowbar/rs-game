@@ -249,7 +249,7 @@ std::ostream& operator<<(std::ostream& out, const Hexmap& hm);
 
 Format the hexmap as plain text.
 
-## Static geometry functions
+### Static geometry functions
 
 ```c++
 static int Hexmap::area(int radius) noexcept;
