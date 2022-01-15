@@ -22,6 +22,8 @@ int main(int argc, char** argv) {
 
     // hexmap-geometry-test.cpp
     UNIT_TEST(rs_game_hexmap_coordinate_operations)
+
+    // hexmap-building-test.cpp
     UNIT_TEST(rs_game_hexmap_adjacency_properties)
     UNIT_TEST(rs_game_hexmap_initializer_list)
 
