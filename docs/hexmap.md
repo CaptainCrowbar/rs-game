@@ -251,6 +251,7 @@ width is necessary to show all of the labels.
 
 ```c++
 xt Hexmap::xterm() const noexcept;
+void Hexmap::set_xterm(bool b) noexcept;
 void Hexmap::set_xterm(xt x) noexcept;
 ```
 

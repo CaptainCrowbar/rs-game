@@ -87,6 +87,7 @@ namespace RS::Game {
         int width() const noexcept { return width_; }
         void set_width(int w = 2) noexcept { width_ = w; }
         xt xterm() const noexcept { return xterm_; }
+        void set_xterm(bool b) noexcept { xterm_ = xt(b); }
         void set_xterm(xt x) noexcept { xterm_ = x; }
         std::string str() const { return as_string(false); }
 

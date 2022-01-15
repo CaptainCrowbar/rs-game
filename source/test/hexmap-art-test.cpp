@@ -172,7 +172,7 @@ void test_rs_game_hexmap_xterm_art() {
         R"(   \__/   )" "\n"
     );
 
-    TRY(map.set_xterm(Hexmap::xt::yes));
+    TRY(map.set_xterm(true));
 
     TEST_EQUAL(map.str(),
         "    __    \n"
