@@ -156,6 +156,7 @@ True if there are no set hexes. Equivalent to `size()==0`.
 ```c++
 hexlist Hexmap::neighbours_set(hex h) const;
 hexlist Hexmap::neighbours_unset(hex h) const;
+std::pair<hexlist, hexlist> Hexmap::neighbours_set_unset(hex h) const;
 ```
 
 List all set or unset neighbours of a specific hex, in clockwise order.

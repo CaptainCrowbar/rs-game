@@ -6,6 +6,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace RS::Game {
@@ -65,6 +66,7 @@ namespace RS::Game {
         bool empty() const noexcept { return table_.empty(); }
         hexlist neighbours_set(hex h) const;
         hexlist neighbours_unset(hex h) const;
+        std::pair<hexlist, hexlist> neighbours_set_unset(hex h) const;
         hexlist reachable(hex h) const;
         int rings() const;
         int size() const noexcept { return int(table_.size()); }

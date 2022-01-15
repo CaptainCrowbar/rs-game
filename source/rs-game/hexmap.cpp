@@ -123,6 +123,17 @@ namespace RS::Game {
         return vec;
     }
 
+    std::pair<Hexmap::hexlist, Hexmap::hexlist> Hexmap::neighbours_set_unset(hex h) const {
+        std::pair<Hexmap::hexlist, Hexmap::hexlist> pair;
+        for (auto& n: neighbours(h)) {
+            if (contains(n))
+                pair.first.push_back(n);
+            else
+                pair.second.push_back(n);
+        }
+        return pair;
+    }
+
     Hexmap::hexlist Hexmap::reachable(hex h) const {
         std::set<hex> complete;
         std::set<hex> pending{h};

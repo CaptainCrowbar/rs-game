@@ -489,6 +489,13 @@ void test_rs_game_hexmap_adjacency_properties() {
     TEST_EQUAL(format_range(map.neighbours_set({4,0})), "[]");
     TEST_EQUAL(format_range(map.neighbours_unset({4,0})), "[[5,0],[5,1],[4,1],[3,0],[4,23],[5,29]]");
 
+    TEST_EQUAL(format_range(map.neighbours_set_unset({0,0}).first), "[[1,0],[1,1],[1,2],[1,3],[1,4],[1,5]]");
+    TEST_EQUAL(format_range(map.neighbours_set_unset({0,0}).second), "[]");
+    TEST_EQUAL(format_range(map.neighbours_set_unset({2,0}).first), "[[2,1],[1,0]]");
+    TEST_EQUAL(format_range(map.neighbours_set_unset({2,0}).second), "[[3,0],[3,1],[2,11],[3,17]]");
+    TEST_EQUAL(format_range(map.neighbours_set_unset({4,0}).first), "[]");
+    TEST_EQUAL(format_range(map.neighbours_set_unset({4,0}).second), "[[5,0],[5,1],[4,1],[3,0],[4,23],[5,29]]");
+
     //      __         //
     //     /20\__      //
     //     \__/21\__   //
