@@ -11,7 +11,7 @@ namespace RS::Game {
 
     namespace Detail {
 
-        // Funcions
+        // Functions
 
         SharedBase gen2base(const TextGenerator& g) {
             return g.base_;
@@ -138,11 +138,6 @@ namespace RS::Game {
     TextGenerator operator>>(const TextGenerator& g, StringFunction f) {
         using namespace Detail;
         return base2gen<TransformText>(gen2base(g), f);
-    }
-
-    TextGenerator str(const std::string& s) {
-        using namespace Detail;
-        return base2gen<FixedText>(s);
     }
 
     TextGenerator number(int min, int max) {

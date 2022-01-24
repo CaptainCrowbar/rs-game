@@ -35,6 +35,13 @@ void test_rs_game_text_generation_constant() {
         TEST_EQUAL(s, "hello");
     }
 
+    TRY(t = U'α');
+
+    for (int i = 0; i < 1000; ++i) {
+        TRY(s = t(rng));
+        TEST_EQUAL(s, "α");
+    }
+
 }
 
 void test_rs_game_text_generation_number() {
