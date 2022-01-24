@@ -55,6 +55,7 @@ Generates a random integer between `min` and `max` inclusive, and returns it
 as a string. This will throw `std::invalid_argument` if `min>max`.
 
 ```c++
+TextGenerator choose(const std::string& list);
 TextGenerator choose(const StringList& list);
 TextGenerator choose(const TextList& list);
 TextGenerator choose(std::initializer_list<TextGenerator> list);
@@ -63,13 +64,15 @@ TextGenerator choose(std::initializer_list<std::pair<TextGenerator, double>> wei
 ```
 
 These create a generator that calls one of a set of generators, chosen at
-random. The first three versions choose any of their generators with equal
-probability; the last two choose with probabilities in proportion to the
-specified weights. Weights need not add up to 1.
+random. The first four versions choose any of their generators with equal
+probability (the first version chooses one of the Unicode characters in the
+string). The last two choose with probabilities in proportion to the
+specified weights (weights need not add up to 1).
 
 All of these will throw `std::invalid_argument` if the argument container is
-empty. The weighted versions will throw if any weight is negative, or if all
-weights are zero.
+empty. The first version will throw if the string is not valid UTF-8. The
+weighted versions will throw if any weight is negative, or if all weights are
+zero.
 
 ```c++
 TextGenerator operator+(const TextGenerator& a, const TextGenerator& b);

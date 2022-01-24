@@ -179,9 +179,18 @@ namespace RS::Game {
         return base2gen<NumberText>(min, max);
     }
 
+    TextGenerator choose(const std::string& list) {
+        using namespace Detail;
+        auto utf32 = decode_string(list);
+        BaseList base_list;
+        std::transform(utf32.begin(), utf32.end(), append(base_list),
+            [] (char32_t c) { return gen2base(encode_utf8_string({c})); });
+        return base2gen<SelectText>(base_list);
+    }
+
     TextGenerator choose(const StringList& list) {
         using namespace Detail;
-        Detail::BaseList base_list;
+        BaseList base_list;
         std::transform(list.begin(), list.end(), append(base_list),
             [] (auto& s) { return std::make_shared<FixedText>(s); });
         return base2gen<SelectText>(base_list);
@@ -189,7 +198,7 @@ namespace RS::Game {
 
     TextGenerator choose(const TextList& list) {
         using namespace Detail;
-        Detail::BaseList base_list;
+        BaseList base_list;
         std::transform(list.begin(), list.end(), append(base_list), gen2base);
         return base2gen<SelectText>(base_list);
     }
@@ -200,7 +209,7 @@ namespace RS::Game {
 
     TextGenerator choose(const TextWeights& weights) {
         using namespace Detail;
-        Detail::BaseWeights base_weights;
+        BaseWeights base_weights;
         std::transform(weights.begin(), weights.end(), append(base_weights),
             [] (auto& pair) { return std::make_pair(gen2base(pair.first), pair.second); });
         return base2gen<WeightedText>(base_weights);

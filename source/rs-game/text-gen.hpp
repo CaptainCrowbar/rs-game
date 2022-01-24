@@ -162,6 +162,7 @@ namespace RS::Game {
 
     template <typename T> TextGenerator str(T&& t) { return TextGenerator(std::forward<T>(t)); }
     TextGenerator number(int min, int max);
+    TextGenerator choose(const std::string& list);
     TextGenerator choose(const StringList& list);
     TextGenerator choose(const TextList& list);
     TextGenerator choose(std::initializer_list<TextGenerator> list);

@@ -109,6 +109,22 @@ void test_rs_game_text_generation_select() {
     TEST_NEAR(census["ghi"], 250, 50);
     TEST_NEAR(census["jkl"], 250, 50);
 
+    TRY(t = choose("αβγδε"));
+    census.clear();
+
+    for (int i = 0; i < 1000; ++i) {
+        TRY(s = t(rng));
+        TEST_MATCH(s, "^(α|β|γ|δ|ε)$");
+        ++census[s];
+    }
+
+    TEST_EQUAL(census.size(), 5u);
+    TEST_NEAR(census["α"], 200, 50);
+    TEST_NEAR(census["β"], 200, 50);
+    TEST_NEAR(census["γ"], 200, 50);
+    TEST_NEAR(census["δ"], 200, 50);
+    TEST_NEAR(census["ε"], 200, 50);
+
 }
 
 void test_rs_game_text_generation_weighted() {
