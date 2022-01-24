@@ -6,12 +6,14 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
 namespace RS::Game {
 
     class TextGenerator;
+
     using StringFunction = std::function<std::string(const std::string&)>;
     using StringList = std::vector<std::string>;
     using TextList = std::vector<TextGenerator>;
@@ -20,12 +22,13 @@ namespace RS::Game {
     namespace Detail {
 
         class TextBase;
+
         using SharedBase = std::shared_ptr <TextBase>;
         using BaseList = std::vector<SharedBase>;
         using BaseWeights = std::vector<std::pair<SharedBase, double>>;
 
         template <typename T, typename... Args> TextGenerator base2gen(Args&&... args);
-        SharedBase gen2base(const TextGenerator& tg);
+        SharedBase gen2base(const TextGenerator& g);
 
     }
 
@@ -41,7 +44,7 @@ namespace RS::Game {
         std::string operator()(Sci::StdRng& rng) const;
     private:
         template <typename T, typename... Args> friend TextGenerator Detail::base2gen(Args&&... args);
-        friend Detail::SharedBase Detail::gen2base(const TextGenerator& tg);
+        friend Detail::SharedBase Detail::gen2base(const TextGenerator& g);
         Detail::SharedBase base_;
     };
 
@@ -49,17 +52,16 @@ namespace RS::Game {
 
         class TextBase {
         public:
-            using result_type = std::string;
             virtual ~TextBase() = default;
             virtual std::string gen(Sci::StdRng& rng) const = 0;
-            std::string operator()(Sci::StdRng& rng) const { return gen(rng); }
         };
 
         template <typename T, typename... Args>
         TextGenerator base2gen(Args&&... args) {
-            TextGenerator tg;
-            tg.base_ = std::make_shared<T>(std::forward<Args>(args)...);
-            return tg;
+            static_assert(std::is_base_of_v<TextBase, T>);
+            TextGenerator g;
+            g.base_ = std::make_shared<T>(std::forward<Args>(args)...);
+            return g;
         }
 
         class FixedText:
@@ -154,9 +156,9 @@ namespace RS::Game {
 
     TextGenerator operator+(const TextGenerator& a, const TextGenerator& b);
     TextGenerator operator|(const TextGenerator& a, const TextGenerator& b);
-    TextGenerator operator*(const TextGenerator& tg, int n);
-    TextGenerator operator%(const TextGenerator& tg, double p);
-    TextGenerator operator>>(const TextGenerator& tg, StringFunction f);
+    TextGenerator operator*(const TextGenerator& g, int n);
+    TextGenerator operator%(const TextGenerator& g, double p);
+    TextGenerator operator>>(const TextGenerator& g, StringFunction f);
 
     TextGenerator str(const std::string& s);
     TextGenerator number(int min, int max);
@@ -164,6 +166,6 @@ namespace RS::Game {
     TextGenerator choose(const TextList& list);
     TextGenerator choose(std::initializer_list<TextGenerator> list);
     TextGenerator choose(const TextWeights& weights);
-    TextGenerator choose(std::initializer_list<std::pair<TextGenerator, double>> list);
+    TextGenerator choose(std::initializer_list<std::pair<TextGenerator, double>> weights);
 
 }

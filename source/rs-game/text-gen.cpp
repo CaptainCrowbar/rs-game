@@ -9,27 +9,12 @@ using namespace RS::TL;
 
 namespace RS::Game {
 
-    // TextGenerator class
-
-    TextGenerator::TextGenerator(const std::string& str):
-    base_(std::make_shared<Detail::FixedText>(str)) {}
-
-    TextGenerator::TextGenerator(char32_t c):
-    base_(std::make_shared<Detail::FixedText>(encode_utf8_string({c}))) {}
-
-    std::string TextGenerator::operator()(StdRng& rng) const {
-        if (base_)
-            return (*base_)(rng);
-        else
-            return {};
-    }
-
     namespace Detail {
 
         // Funcions
 
-        SharedBase gen2base(const TextGenerator& tg) {
-            return tg.base_;
+        SharedBase gen2base(const TextGenerator& g) {
+            return g.base_;
         }
 
         // NumberText class
@@ -60,8 +45,8 @@ namespace RS::Game {
         // SequenceText class
 
         std::string SequenceText::gen(StdRng& rng) const {
-            auto left = (*left_)(rng);
-            auto right = (*right_)(rng);
+            auto left = left_->gen(rng);
+            auto right = right_->gen(rng);
             return left + right;
         }
 
@@ -93,6 +78,21 @@ namespace RS::Game {
 
     }
 
+    // TextGenerator class
+
+    TextGenerator::TextGenerator(const std::string& str):
+    base_(std::make_shared<Detail::FixedText>(str)) {}
+
+    TextGenerator::TextGenerator(char32_t c):
+    base_(std::make_shared<Detail::FixedText>(encode_utf8_string({c}))) {}
+
+    std::string TextGenerator::operator()(StdRng& rng) const {
+        if (base_)
+            return base_->gen(rng);
+        else
+            return {};
+    }
+
     // Generator functions
 
     TextGenerator operator+(const TextGenerator& a, const TextGenerator& b) {
@@ -120,9 +120,9 @@ namespace RS::Game {
         return base2gen<SelectText>(list);
     }
 
-    TextGenerator operator*(const TextGenerator& tg, int n) {
+    TextGenerator operator*(const TextGenerator& g, int n) {
         using namespace Detail;
-        auto base = gen2base(tg);
+        auto base = gen2base(g);
         auto base_rep = std::dynamic_pointer_cast<RepeatText>(base);
         if (base_rep)
             return base2gen<RepeatText>(base_rep->base(), base_rep->min(), n);
@@ -130,14 +130,14 @@ namespace RS::Game {
             return base2gen<RepeatText>(base, n);
     }
 
-    TextGenerator operator%(const TextGenerator& tg, double p) {
+    TextGenerator operator%(const TextGenerator& g, double p) {
         using namespace Detail;
-        return base2gen<OptionalText>(gen2base(tg), p);
+        return base2gen<OptionalText>(gen2base(g), p);
     }
 
-    TextGenerator operator>>(const TextGenerator& tg, StringFunction f) {
+    TextGenerator operator>>(const TextGenerator& g, StringFunction f) {
         using namespace Detail;
-        return base2gen<TransformText>(gen2base(tg), f);
+        return base2gen<TransformText>(gen2base(g), f);
     }
 
     TextGenerator str(const std::string& s) {
@@ -177,8 +177,8 @@ namespace RS::Game {
         return base2gen<WeightedText>(base_weights);
     }
 
-    TextGenerator choose(std::initializer_list<std::pair<TextGenerator, double>> list) {
-        return choose(TextWeights(list));
+    TextGenerator choose(std::initializer_list<std::pair<TextGenerator, double>> weights) {
+        return choose(TextWeights(weights));
     }
 
 }
