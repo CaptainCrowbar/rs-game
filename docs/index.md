@@ -28,4 +28,5 @@ Other libraries required:
 * [Dice](dice.html)
 * [English language tools](english.html)
 * [Hex mapping](hexmap.html)
+* [Text generation](text-gen.html)
 * [Version information](version.html)

@@ -32,6 +32,17 @@ int main(int argc, char** argv) {
     UNIT_TEST(rs_game_hexmap_emoji_art)
     UNIT_TEST(rs_game_hexmap_xterm_art)
 
+    // text-gen-test.cpp
+    UNIT_TEST(rs_game_text_generation_null)
+    UNIT_TEST(rs_game_text_generation_constant)
+    UNIT_TEST(rs_game_text_generation_number)
+    UNIT_TEST(rs_game_text_generation_select)
+    UNIT_TEST(rs_game_text_generation_weighted)
+    UNIT_TEST(rs_game_text_generation_sequence)
+    UNIT_TEST(rs_game_text_generation_optional)
+    UNIT_TEST(rs_game_text_generation_repeat)
+    UNIT_TEST(rs_game_text_generation_transform)
+
     // version-test.cpp
     UNIT_TEST(rs_game_version)
 

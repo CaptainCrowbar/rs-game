@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 # and propagate the new version to version.hpp.
 
 project(rs-game
-    VERSION 0.1.10
+    VERSION 0.1.12
     LANGUAGES CXX
 )
 
@@ -61,6 +61,7 @@ add_library(${library} STATIC
     ${library}/dice.cpp
     ${library}/english.cpp
     ${library}/hexmap.cpp
+    ${library}/text-gen.cpp
 )
 
 add_executable(${unittest}
@@ -69,6 +70,7 @@ add_executable(${unittest}
     test/hexmap-geometry-test.cpp
     test/hexmap-building-test.cpp
     test/hexmap-art-test.cpp
+    test/text-gen-test.cpp
     test/version-test.cpp
     test/unit-test.cpp
 )
