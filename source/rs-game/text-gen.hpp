@@ -76,7 +76,7 @@ namespace RS::Game {
         class NumberText:
         public TextBase {
         public:
-            NumberText(int min, int max): random_int_(min, max) {}
+            NumberText(int min, int max);
             std::string gen(Sci::StdRng& rng) const override;
         private:
             Sci::UniformInteger<int> random_int_;
@@ -85,7 +85,7 @@ namespace RS::Game {
         class SelectText:
         public TextBase {
         public:
-            explicit SelectText(const BaseList& list): list_(list), choice_(list) {}
+            explicit SelectText(const BaseList& list);
             std::string gen(Sci::StdRng& rng) const override;
             const BaseList& list() const noexcept { return list_; }
         private:
@@ -115,7 +115,7 @@ namespace RS::Game {
         class OptionalText:
         public TextBase {
         public:
-            OptionalText(SharedBase base, double p): base_(base), option_(p) {}
+            OptionalText(SharedBase base, double p);
             std::string gen(Sci::StdRng& rng) const override;
         private:
             SharedBase base_;
@@ -126,7 +126,7 @@ namespace RS::Game {
         public TextBase {
         public:
             RepeatText(SharedBase base, int n): base_(base), random_int_(n, n) {}
-            RepeatText(SharedBase base, int m, int n): base_(base), random_int_(m, n) {}
+            RepeatText(SharedBase base, int m, int n);
             std::string gen(Sci::StdRng& rng) const override;
             SharedBase base() const noexcept { return base_; }
             int min() const noexcept { return random_int_.min(); }

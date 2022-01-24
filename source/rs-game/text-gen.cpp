@@ -2,6 +2,7 @@
 #include "rs-tl/iterator.hpp"
 #include "rs-format/unicode.hpp"
 #include <algorithm>
+#include <stdexcept>
 
 using namespace RS::Format;
 using namespace RS::Sci;
@@ -19,11 +20,23 @@ namespace RS::Game {
 
         // NumberText class
 
+        NumberText::NumberText(int min, int max):
+        random_int_(min, max) {
+            if (min > max)
+                throw std::invalid_argument("Invalid range for number generator");
+        }
+
         std::string NumberText::gen(StdRng& rng) const {
             return std::to_string(random_int_(rng));
         }
 
         // SelectText class
+
+        SelectText::SelectText(const BaseList& list):
+        list_(list), choice_(list) {
+            if (list.empty())
+                throw std::invalid_argument("Empty list in text selection generator");
+        }
 
         std::string SelectText::gen(StdRng& rng) const {
             auto child = choice_(rng);
@@ -33,8 +46,17 @@ namespace RS::Game {
         // WeightedText class
 
         WeightedText::WeightedText(const BaseWeights& weights) {
-            for (auto& [base,weight]: weights)
+            if (weights.empty())
+                throw std::invalid_argument("Empty list in weighted text selection generator");
+            double total = 0;
+            for (auto& [base,weight]: weights) {
+                if (weight < 0)
+                    throw std::invalid_argument("Invalid weight in weighted text selection generator");
                 choice_.add(weight, base);
+                total += weight;
+            }
+            if (total == 0)
+                throw std::invalid_argument("Invalid weights in weighted text selection generator");
         }
 
         std::string WeightedText::gen(StdRng& rng) const {
@@ -52,6 +74,12 @@ namespace RS::Game {
 
         // OptionalText class
 
+        OptionalText::OptionalText(SharedBase base, double p):
+        base_(base), option_(p) {
+            if (p < 0 || p > 1)
+                throw std::invalid_argument("Invalid probability in optional text generator");
+        }
+
         std::string OptionalText::gen(StdRng& rng) const {
             if (option_(rng))
                 return base_->gen(rng);
@@ -60,6 +88,12 @@ namespace RS::Game {
         }
 
         // RepeatText class
+
+        RepeatText::RepeatText(SharedBase base, int m, int n):
+        base_(base), random_int_(m, n) {
+            if (m > n)
+                throw std::invalid_argument("Invalid range for repeat generator");
+        }
 
         std::string RepeatText::gen(StdRng& rng) const {
             int n = random_int_(rng);

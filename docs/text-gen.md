@@ -52,7 +52,7 @@ TextGenerator number(int min, int max);
 ```
 
 Generates a random integer between `min` and `max` inclusive, and returns it
-as a string. Behaviour is undefined if `min>max`.
+as a string. This will throw `std::invalid_argument` if `min>max`.
 
 ```c++
 TextGenerator choose(const StringList& list);
@@ -65,9 +65,11 @@ TextGenerator choose(std::initializer_list<std::pair<TextGenerator, double>> wei
 These create a generator that calls one of a set of generators, chosen at
 random. The first three versions choose any of their generators with equal
 probability; the last two choose with probabilities in proportion to the
-specified weights. Weights need not add up to 1. For all versions, behaviour
-is undefined if the argument vector is empty. For the weighted versions,
-behaviour is undefined if any weight is negative, or if all weights are zero.
+specified weights. Weights need not add up to 1.
+
+All of these will throw `std::invalid_argument` if the argument container is
+empty. The weighted versions will throw if any weight is negative, or if all
+weights are zero.
 
 ```c++
 TextGenerator operator+(const TextGenerator& a, const TextGenerator& b);
@@ -90,14 +92,14 @@ TextGenerator operator*(const TextGenerator& g, int n);
 
 `G*n` calls the generator `n` times and concatenates the results; `G*m*n`
 generates a random number from `m` to `n` and concatenates that many calls.
-Behaviour is undefined if `m>n`.
+This will throw `std::invalid_argument` if `m>n`.
 
 ```c++
 TextGenerator operator%(const TextGenerator& g, double p);
 ```
 
 Calls the generator with probability `p`, otherwise returns an empty string.
-Behaviour is undefined if `p<0` or `p>1`.
+This will throw `std::invalid_argument` if `p<0` or `p>1`.
 
 ```c++
 TextGenerator operator>>(const TextGenerator& g, StringFunction f);
