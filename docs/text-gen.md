@@ -76,12 +76,14 @@ zero.
 
 ```c++
 TextGenerator operator+(const TextGenerator& a, const TextGenerator& b);
+TextGenerator& operator+=(TextGenerator& a, const TextGenerator& b);
 ```
 
 Concatenates the output of two generators.
 
 ```c++
 TextGenerator operator|(const TextGenerator& a, const TextGenerator& b);
+TextGenerator& operator|=(TextGenerator& a, const TextGenerator& b);
 ```
 
 Returns the result of either generator at random. This operator can be chained
@@ -91,6 +93,7 @@ with probability 1/4, equivalent to `choose(A,B,C,D)`.
 
 ```c++
 TextGenerator operator*(const TextGenerator& g, int n);
+TextGenerator& operator*=(TextGenerator& g, int n);
 ```
 
 `G*n` calls the generator `n` times and concatenates the results; `G*m*n`
@@ -99,6 +102,7 @@ This will throw `std::invalid_argument` if `m>n`.
 
 ```c++
 TextGenerator operator%(const TextGenerator& g, double p);
+TextGenerator& operator%=(TextGenerator& g, double p);
 ```
 
 Calls the generator with probability `p`, otherwise returns an empty string.
@@ -106,6 +110,7 @@ This will throw `std::invalid_argument` if `p<0` or `p>1`.
 
 ```c++
 TextGenerator operator>>(const TextGenerator& g, StringFunction f);
+TextGenerator& operator>>=(TextGenerator& g, StringFunction f);
 ```
 
 Calls the function on the output of the generator and returns the result.

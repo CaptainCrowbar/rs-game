@@ -147,18 +147,16 @@ namespace RS::Game {
 
     }
 
-    // A+B    A followed by B
-    // A|B    A or B with equal probability
-    // A*n    A repeated n times
-    // A*m*n  A repeated m-n times
-    // A%p    A with probability p
-    // A>>f   Return f(A)
-
     TextGenerator operator+(const TextGenerator& a, const TextGenerator& b);
+    TextGenerator& operator+=(TextGenerator& a, const TextGenerator& b);
     TextGenerator operator|(const TextGenerator& a, const TextGenerator& b);
+    TextGenerator& operator|=(TextGenerator& a, const TextGenerator& b);
     TextGenerator operator*(const TextGenerator& g, int n);
+    TextGenerator& operator*=(TextGenerator& g, int n);
     TextGenerator operator%(const TextGenerator& g, double p);
+    TextGenerator& operator%=(TextGenerator& g, double p);
     TextGenerator operator>>(const TextGenerator& g, StringFunction f);
+    TextGenerator& operator>>=(TextGenerator& g, StringFunction f);
 
     template <typename T> TextGenerator str(T&& t) { return TextGenerator(std::forward<T>(t)); }
     TextGenerator number(int min, int max);

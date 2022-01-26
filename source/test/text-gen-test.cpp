@@ -193,6 +193,13 @@ void test_rs_game_text_generation_sequence() {
         TEST_MATCH(s, "^(abc|def|ghi)(123|456|789)$");
     }
 
+    TRY(t += u);
+
+    for (int i = 0; i < 1000; ++i) {
+        TRY(s = t(rng));
+        TEST_MATCH(s, "^(abc|def|ghi)(123|456|789)$");
+    }
+
 }
 
 void test_rs_game_text_generation_optional() {
@@ -207,6 +214,19 @@ void test_rs_game_text_generation_optional() {
 
     for (int i = 0; i < 1000; ++i) {
         TRY(s = t(rng));
+        TEST_MATCH(s, "^(abc)?$");
+        ++census[s];
+    }
+
+    TEST_EQUAL(census.size(), 2u);
+    TEST_NEAR(census["abc"], 750, 50);
+    TEST_NEAR(census[""], 250, 50);
+
+    TRY(u %= 0.75);
+    census.clear();
+
+    for (int i = 0; i < 1000; ++i) {
+        TRY(s = u(rng));
         TEST_MATCH(s, "^(abc)?$");
         ++census[s];
     }
@@ -248,6 +268,13 @@ void test_rs_game_text_generation_repeat() {
     TEST_NEAR(census["xyzxyzxyzxyz"], 200, 50);
     TEST_NEAR(census["xyzxyzxyzxyzxyz"], 200, 50);
 
+    TRY(u *= 3);
+
+    for (int i = 0; i < 1000; ++i) {
+        TRY(s = u(rng));
+        TEST_EQUAL(s, "xyzxyzxyz");
+    }
+
 }
 
 void test_rs_game_text_generation_transform() {
@@ -284,5 +311,14 @@ void test_rs_game_text_generation_transform() {
     TEST_NEAR(census["(abc)"], 333, 50);
     TEST_NEAR(census["(def)"], 333, 50);
     TEST_NEAR(census["(ghi)"], 333, 50);
+
+    TRY(u >>= ascii_uppercase);
+    census.clear();
+
+    for (int i = 0; i < 1000; ++i) {
+        TRY(s = u(rng));
+        TEST_MATCH(s, "^(ABC|DEF|GHI)$");
+        ++census[s];
+    }
 
 }

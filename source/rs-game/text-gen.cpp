@@ -134,6 +134,12 @@ namespace RS::Game {
         return base2gen<SequenceText>(gen2base(a), gen2base(b));
     }
 
+    TextGenerator& operator+=(TextGenerator& a, const TextGenerator& b) {
+        auto t = a + b;
+        a = std::move(t);
+        return a;
+    }
+
     TextGenerator operator|(const TextGenerator& a, const TextGenerator& b) {
         using namespace Detail;
         auto base_a = gen2base(a);
@@ -154,6 +160,12 @@ namespace RS::Game {
         return base2gen<SelectText>(list);
     }
 
+    TextGenerator& operator|=(TextGenerator& a, const TextGenerator& b) {
+        auto t = a | b;
+        a = std::move(t);
+        return a;
+    }
+
     TextGenerator operator*(const TextGenerator& g, int n) {
         using namespace Detail;
         auto base = gen2base(g);
@@ -164,14 +176,32 @@ namespace RS::Game {
             return base2gen<RepeatText>(base, n);
     }
 
+    TextGenerator& operator*=(TextGenerator& g, int n) {
+        auto t = g * n;
+        g = std::move(t);
+        return g;
+    }
+
     TextGenerator operator%(const TextGenerator& g, double p) {
         using namespace Detail;
         return base2gen<OptionalText>(gen2base(g), p);
     }
 
+    TextGenerator& operator%=(TextGenerator& g, double p) {
+        auto t = g % p;
+        g = std::move(t);
+        return g;
+    }
+
     TextGenerator operator>>(const TextGenerator& g, StringFunction f) {
         using namespace Detail;
         return base2gen<TransformText>(gen2base(g), f);
+    }
+
+    TextGenerator& operator>>=(TextGenerator& g, StringFunction f) {
+        auto t = g >> f;
+        g = std::move(t);
+        return g;
     }
 
     TextGenerator number(int min, int max) {
