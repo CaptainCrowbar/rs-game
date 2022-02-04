@@ -1,7 +1,9 @@
 #include "rs-game/text-gen.hpp"
 #include "rs-tl/iterator.hpp"
+#include "rs-format/string.hpp"
 #include "rs-format/unicode.hpp"
 #include <algorithm>
+#include <limits>
 #include <stdexcept>
 
 using namespace RS::Format;
@@ -14,7 +16,7 @@ namespace RS::Game {
 
         // Functions
 
-        SharedBase gen2base(const TextGenerator& g) {
+        SharedBase gen2base(const TextGen& g) {
             return g.base_;
         }
 
@@ -112,35 +114,80 @@ namespace RS::Game {
 
     }
 
-    // TextGenerator class
+    // TextGen class
 
-    TextGenerator::TextGenerator(const std::string& str):
+    TextGen::TextGen(const std::string& str):
     base_(std::make_shared<Detail::FixedText>(str)) {}
 
-    TextGenerator::TextGenerator(char32_t c):
+    TextGen::TextGen(char32_t c):
     base_(std::make_shared<Detail::FixedText>(encode_utf8_string({c}))) {}
 
-    std::string TextGenerator::operator()(StdRng& rng) const {
+    std::string TextGen::operator()(StdRng& rng) const {
         if (base_)
             return base_->gen(rng);
         else
             return {};
     }
 
-    // Generator functions
+    TextGen TextGen::number(int min, int max) {
+        using namespace Detail;
+        return base2gen<NumberText>(min, max);
+    }
 
-    TextGenerator operator+(const TextGenerator& a, const TextGenerator& b) {
+    TextGen TextGen::choice(const std::string& list) {
+        using namespace Detail;
+        auto utf32 = decode_string(list);
+        BaseList base_list;
+        std::transform(utf32.begin(), utf32.end(), append(base_list),
+            [] (char32_t c) { return gen2base(encode_utf8_string({c})); });
+        return base2gen<SelectText>(base_list);
+    }
+
+    TextGen TextGen::choice(const StringList& list) {
+        using namespace Detail;
+        BaseList base_list;
+        std::transform(list.begin(), list.end(), append(base_list),
+            [] (auto& s) { return std::make_shared<FixedText>(s); });
+        return base2gen<SelectText>(base_list);
+    }
+
+    TextGen TextGen::choice(const TextList& list) {
+        using namespace Detail;
+        BaseList base_list;
+        std::transform(list.begin(), list.end(), append(base_list), gen2base);
+        return base2gen<SelectText>(base_list);
+    }
+
+    TextGen TextGen::choice(std::initializer_list<TextGen> list) {
+        return choice(TextList(list));
+    }
+
+    TextGen TextGen::choice(const TextWeights& weights) {
+        using namespace Detail;
+        BaseWeights base_weights;
+        std::transform(weights.begin(), weights.end(), append(base_weights),
+            [] (auto& pair) { return std::make_pair(gen2base(pair.first), pair.second); });
+        return base2gen<WeightedText>(base_weights);
+    }
+
+    TextGen TextGen::choice(std::initializer_list<std::pair<TextGen, double>> weights) {
+        return choice(TextWeights(weights));
+    }
+
+    // Operators
+
+    TextGen operator+(const TextGen& a, const TextGen& b) {
         using namespace Detail;
         return base2gen<SequenceText>(gen2base(a), gen2base(b));
     }
 
-    TextGenerator& operator+=(TextGenerator& a, const TextGenerator& b) {
+    TextGen& operator+=(TextGen& a, const TextGen& b) {
         auto t = a + b;
         a = std::move(t);
         return a;
     }
 
-    TextGenerator operator|(const TextGenerator& a, const TextGenerator& b) {
+    TextGen operator|(const TextGen& a, const TextGen& b) {
         using namespace Detail;
         auto base_a = gen2base(a);
         auto base_b = gen2base(b);
@@ -160,13 +207,13 @@ namespace RS::Game {
         return base2gen<SelectText>(list);
     }
 
-    TextGenerator& operator|=(TextGenerator& a, const TextGenerator& b) {
+    TextGen& operator|=(TextGen& a, const TextGen& b) {
         auto t = a | b;
         a = std::move(t);
         return a;
     }
 
-    TextGenerator operator*(const TextGenerator& g, int n) {
+    TextGen operator*(const TextGen& g, int n) {
         using namespace Detail;
         auto base = gen2base(g);
         auto base_rep = std::dynamic_pointer_cast<RepeatText>(base);
@@ -176,77 +223,54 @@ namespace RS::Game {
             return base2gen<RepeatText>(base, n);
     }
 
-    TextGenerator& operator*=(TextGenerator& g, int n) {
+    TextGen& operator*=(TextGen& g, int n) {
         auto t = g * n;
         g = std::move(t);
         return g;
     }
 
-    TextGenerator operator%(const TextGenerator& g, double p) {
+    TextGen operator%(const TextGen& g, double p) {
         using namespace Detail;
         return base2gen<OptionalText>(gen2base(g), p);
     }
 
-    TextGenerator& operator%=(TextGenerator& g, double p) {
+    TextGen& operator%=(TextGen& g, double p) {
         auto t = g % p;
         g = std::move(t);
         return g;
     }
 
-    TextGenerator operator>>(const TextGenerator& g, StringFunction f) {
+    TextGen operator>>(const TextGen& g, StringFunction f) {
         using namespace Detail;
         return base2gen<TransformText>(gen2base(g), f);
     }
 
-    TextGenerator& operator>>=(TextGenerator& g, StringFunction f) {
+    TextGen& operator>>=(TextGen& g, StringFunction f) {
         auto t = g >> f;
         g = std::move(t);
         return g;
     }
 
-    TextGenerator number(int min, int max) {
-        using namespace Detail;
-        return base2gen<NumberText>(min, max);
-    }
+    // Literals
 
-    TextGenerator choose(const std::string& list) {
-        using namespace Detail;
-        auto utf32 = decode_string(list);
-        BaseList base_list;
-        std::transform(utf32.begin(), utf32.end(), append(base_list),
-            [] (char32_t c) { return gen2base(encode_utf8_string({c})); });
-        return base2gen<SelectText>(base_list);
-    }
+    namespace Literals {
 
-    TextGenerator choose(const StringList& list) {
-        using namespace Detail;
-        BaseList base_list;
-        std::transform(list.begin(), list.end(), append(base_list),
-            [] (auto& s) { return std::make_shared<FixedText>(s); });
-        return base2gen<SelectText>(base_list);
-    }
+        TextGen operator""_tg(const char* ptr, size_t len) {
+            std::string str(ptr, len);
+            auto vec = split(str);
+            switch (vec.size()) {
+                case 0:   return TextGen();
+                case 1:   return TextGen(str);
+                default:  return TextGen::choice(vec);
+            }
+        }
 
-    TextGenerator choose(const TextList& list) {
-        using namespace Detail;
-        BaseList base_list;
-        std::transform(list.begin(), list.end(), append(base_list), gen2base);
-        return base2gen<SelectText>(base_list);
-    }
+        TextGen operator""_tg(unsigned long long n) {
+            if (n > unsigned(std::numeric_limits<int>::max()))
+                throw std::invalid_argument("Invalid range for number generator");
+            return TextGen::number(1, int(n));
+        }
 
-    TextGenerator choose(std::initializer_list<TextGenerator> list) {
-        return choose(TextList(list));
-    }
-
-    TextGenerator choose(const TextWeights& weights) {
-        using namespace Detail;
-        BaseWeights base_weights;
-        std::transform(weights.begin(), weights.end(), append(base_weights),
-            [] (auto& pair) { return std::make_pair(gen2base(pair.first), pair.second); });
-        return base2gen<WeightedText>(base_weights);
-    }
-
-    TextGenerator choose(std::initializer_list<std::pair<TextGenerator, double>> weights) {
-        return choose(TextWeights(weights));
     }
 
 }

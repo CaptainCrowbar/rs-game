@@ -12,12 +12,12 @@
 
 namespace RS::Game {
 
-    class TextGenerator;
+    class TextGen;
 
     using StringFunction = std::function<std::string(const std::string&)>;
     using StringList = std::vector<std::string>;
-    using TextList = std::vector<TextGenerator>;
-    using TextWeights = std::vector<std::pair<TextGenerator, double>>;
+    using TextList = std::vector<TextGen>;
+    using TextWeights = std::vector<std::pair<TextGen, double>>;
 
     namespace Detail {
 
@@ -27,25 +27,41 @@ namespace RS::Game {
         using BaseList = std::vector<SharedBase>;
         using BaseWeights = std::vector<std::pair<SharedBase, double>>;
 
-        template <typename T, typename... Args> TextGenerator base2gen(Args&&... args);
-        SharedBase gen2base(const TextGenerator& g);
+        template <typename T, typename... Args> TextGen base2gen(Args&&... args);
+        SharedBase gen2base(const TextGen& g);
 
     }
 
-    class TextGenerator {
+    class TextGen {
+
     public:
+
         using result_type = std::string;
-        TextGenerator() = default;
-        TextGenerator(const std::string& str);
-        TextGenerator(const std::string_view& str): TextGenerator(std::string(str)) {}
-        TextGenerator(const char* str): TextGenerator(std::string(str)) {}
-        TextGenerator(char c): TextGenerator(std::string{c}) {}
-        TextGenerator(char32_t c);
+
+        TextGen() = default;
+        TextGen(const std::string& str);
+        TextGen(const std::string_view& str): TextGen(std::string(str)) {}
+        TextGen(const char* str): TextGen(std::string(str)) {}
+        TextGen(char c): TextGen(std::string{c}) {}
+        TextGen(char32_t c);
+
         std::string operator()(Sci::StdRng& rng) const;
+
+        static TextGen number(int min, int max);
+        static TextGen choice(const std::string& list);
+        static TextGen choice(const StringList& list);
+        static TextGen choice(const TextList& list);
+        static TextGen choice(std::initializer_list<TextGen> list);
+        static TextGen choice(const TextWeights& weights);
+        static TextGen choice(std::initializer_list<std::pair<TextGen, double>> weights);
+
     private:
-        template <typename T, typename... Args> friend TextGenerator Detail::base2gen(Args&&... args);
-        friend Detail::SharedBase Detail::gen2base(const TextGenerator& g);
+
+        template <typename T, typename... Args> friend TextGen Detail::base2gen(Args&&... args);
+        friend Detail::SharedBase Detail::gen2base(const TextGen& g);
+
         Detail::SharedBase base_;
+
     };
 
     namespace Detail {
@@ -57,9 +73,9 @@ namespace RS::Game {
         };
 
         template <typename T, typename... Args>
-        TextGenerator base2gen(Args&&... args) {
+        TextGen base2gen(Args&&... args) {
             static_assert(std::is_base_of_v<TextBase, T>);
-            TextGenerator g;
+            TextGen g;
             g.base_ = std::make_shared<T>(std::forward<Args>(args)...);
             return g;
         }
@@ -147,24 +163,22 @@ namespace RS::Game {
 
     }
 
-    TextGenerator operator+(const TextGenerator& a, const TextGenerator& b);
-    TextGenerator& operator+=(TextGenerator& a, const TextGenerator& b);
-    TextGenerator operator|(const TextGenerator& a, const TextGenerator& b);
-    TextGenerator& operator|=(TextGenerator& a, const TextGenerator& b);
-    TextGenerator operator*(const TextGenerator& g, int n);
-    TextGenerator& operator*=(TextGenerator& g, int n);
-    TextGenerator operator%(const TextGenerator& g, double p);
-    TextGenerator& operator%=(TextGenerator& g, double p);
-    TextGenerator operator>>(const TextGenerator& g, StringFunction f);
-    TextGenerator& operator>>=(TextGenerator& g, StringFunction f);
+    TextGen operator+(const TextGen& a, const TextGen& b);
+    TextGen& operator+=(TextGen& a, const TextGen& b);
+    TextGen operator|(const TextGen& a, const TextGen& b);
+    TextGen& operator|=(TextGen& a, const TextGen& b);
+    TextGen operator*(const TextGen& g, int n);
+    TextGen& operator*=(TextGen& g, int n);
+    TextGen operator%(const TextGen& g, double p);
+    TextGen& operator%=(TextGen& g, double p);
+    TextGen operator>>(const TextGen& g, StringFunction f);
+    TextGen& operator>>=(TextGen& g, StringFunction f);
 
-    template <typename T> TextGenerator str(T&& t) { return TextGenerator(std::forward<T>(t)); }
-    TextGenerator number(int min, int max);
-    TextGenerator choose(const std::string& list);
-    TextGenerator choose(const StringList& list);
-    TextGenerator choose(const TextList& list);
-    TextGenerator choose(std::initializer_list<TextGenerator> list);
-    TextGenerator choose(const TextWeights& weights);
-    TextGenerator choose(std::initializer_list<std::pair<TextGenerator, double>> weights);
+    namespace Literals {
+
+        TextGen operator""_tg(const char* ptr, size_t len);
+        TextGen operator""_tg(unsigned long long n);
+
+    }
 
 }

@@ -7,16 +7,17 @@
 
 using namespace RS::Format;
 using namespace RS::Game;
+using namespace RS::Game::Literals;
 using namespace RS::Sci;
 
 void test_rs_game_text_generation_null() {
 
-    TextGenerator t;
+    TextGen gen;
     StdRng rng(42);
     std::string s;
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_EQUAL(s, "");
     }
 
@@ -24,21 +25,21 @@ void test_rs_game_text_generation_null() {
 
 void test_rs_game_text_generation_constant() {
 
-    TextGenerator t;
+    TextGen gen;
     StdRng rng(42);
     std::string s;
 
-    TRY(t = "hello");
+    TRY(gen = "hello");
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_EQUAL(s, "hello");
     }
 
-    TRY(t = U'α');
+    TRY(gen = U'α');
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_EQUAL(s, "α");
     }
 
@@ -46,14 +47,14 @@ void test_rs_game_text_generation_constant() {
 
 void test_rs_game_text_generation_number() {
 
-    TextGenerator t;
+    TextGen gen;
     StdRng rng(42);
     std::string s;
 
-    TRY(t = number(100, 299));
+    TRY(gen = TextGen::number(100, 299));
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_MATCH(s, "^[12]\\d\\d$");
     }
 
@@ -61,15 +62,15 @@ void test_rs_game_text_generation_number() {
 
 void test_rs_game_text_generation_select() {
 
-    TextGenerator t;
+    TextGen gen;
     StdRng rng(42);
     std::string s;
     std::map<std::string, int> census;
 
-    TRY(t = choose({"abc", "def", "ghi"}));
+    TRY(gen = TextGen::choice({"abc", "def", "ghi"}));
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_MATCH(s, "^(abc|def|ghi)$");
         ++census[s];
     }
@@ -80,11 +81,11 @@ void test_rs_game_text_generation_select() {
     TEST_NEAR(census["ghi"], 333, 50);
 
     TextList list = {"rst", "uvw", "xyz"};
-    TRY(t = choose(list));
+    TRY(gen = TextGen::choice(list));
     census.clear();
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_MATCH(s, "^(rst|uvw|xyz)$");
         ++census[s];
     }
@@ -94,11 +95,11 @@ void test_rs_game_text_generation_select() {
     TEST_NEAR(census["uvw"], 333, 50);
     TEST_NEAR(census["xyz"], 333, 50);
 
-    TRY(t = str("abc") | "def" | "ghi" | "jkl");
+    TRY(gen = TextGen("abc") | "def" | "ghi" | "jkl");
     census.clear();
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_MATCH(s, "^(abc|def|ghi|jkl)$");
         ++census[s];
     }
@@ -109,11 +110,11 @@ void test_rs_game_text_generation_select() {
     TEST_NEAR(census["ghi"], 250, 50);
     TEST_NEAR(census["jkl"], 250, 50);
 
-    TRY(t = choose("αβγδε"));
+    TRY(gen = TextGen::choice("αβγδε"));
     census.clear();
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_MATCH(s, "^(α|β|γ|δ|ε)$");
         ++census[s];
     }
@@ -129,12 +130,12 @@ void test_rs_game_text_generation_select() {
 
 void test_rs_game_text_generation_weighted() {
 
-    TextGenerator t;
+    TextGen gen;
     StdRng rng(42);
     std::string s;
     std::map<std::string, int> census;
 
-    TRY(t = choose({
+    TRY(gen = TextGen::choice({
         { "abc", 1 },
         { "def", 2 },
         { "ghi", 3 },
@@ -143,7 +144,7 @@ void test_rs_game_text_generation_weighted() {
 
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_MATCH(s, "^(abc|def|ghi|jkl)$");
         ++census[s];
     }
@@ -161,11 +162,11 @@ void test_rs_game_text_generation_weighted() {
         { "xyz", 4 },
     };
 
-    TRY(t = choose(weights));
+    TRY(gen = TextGen::choice(weights));
     census.clear();
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_MATCH(s, "^(opq|rst|uvw|xyz)$");
         ++census[s];
     }
@@ -180,23 +181,23 @@ void test_rs_game_text_generation_weighted() {
 
 void test_rs_game_text_generation_sequence() {
 
-    TextGenerator t, u, v;
+    TextGen gen, u, v;
     StdRng rng(42);
     std::string s;
 
-    TRY(t = choose({"abc", "def", "ghi"}));
-    TRY(u = choose({"123", "456", "789"}));
-    TRY(v = t + u);
+    TRY(gen = TextGen::choice({"abc", "def", "ghi"}));
+    TRY(u = TextGen::choice({"123", "456", "789"}));
+    TRY(v = gen + u);
 
     for (int i = 0; i < 1000; ++i) {
         TRY(s = v(rng));
         TEST_MATCH(s, "^(abc|def|ghi)(123|456|789)$");
     }
 
-    TRY(t += u);
+    TRY(gen += u);
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_MATCH(s, "^(abc|def|ghi)(123|456|789)$");
     }
 
@@ -204,16 +205,16 @@ void test_rs_game_text_generation_sequence() {
 
 void test_rs_game_text_generation_optional() {
 
-    TextGenerator t, u;
+    TextGen gen, u;
     StdRng rng(42);
     std::string s;
     std::map<std::string, int> census;
 
     TRY(u = "abc");
-    TRY(t = u % 0.75);
+    TRY(gen = u % 0.75);
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_MATCH(s, "^(abc)?$");
         ++census[s];
     }
@@ -239,24 +240,24 @@ void test_rs_game_text_generation_optional() {
 
 void test_rs_game_text_generation_repeat() {
 
-    TextGenerator t, u;
+    TextGen gen, u;
     StdRng rng(42);
     std::string s;
     std::map<std::string, int> census;
 
     TRY(u = "abc");
-    TRY(t = u * 3);
+    TRY(gen = u * 3);
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_EQUAL(s, "abcabcabc");
     }
 
     TRY(u = "xyz");
-    TRY(t = u * 1 * 5);
+    TRY(gen = u * 1 * 5);
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_MATCH(s, "^(xyz){1,5}$");
         ++census[s];
     }
@@ -279,16 +280,16 @@ void test_rs_game_text_generation_repeat() {
 
 void test_rs_game_text_generation_transform() {
 
-    TextGenerator t, u;
+    TextGen gen, u;
     StdRng rng(42);
     std::string s;
     std::map<std::string, int> census;
 
-    TRY(u = str("abc") | "def" | "ghi");
-    TRY(t = u >> ascii_uppercase);
+    TRY(u = TextGen("abc") | "def" | "ghi");
+    TRY(gen = u >> ascii_uppercase);
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_MATCH(s, "^(ABC|DEF|GHI)$");
         ++census[s];
     }
@@ -298,11 +299,11 @@ void test_rs_game_text_generation_transform() {
     TEST_NEAR(census["DEF"], 333, 50);
     TEST_NEAR(census["GHI"], 333, 50);
 
-    TRY(t = u >> [] (auto& s) { return "(" + s + ")"; });
+    TRY(gen = u >> [] (auto& s) { return "(" + s + ")"; });
     census.clear();
 
     for (int i = 0; i < 1000; ++i) {
-        TRY(s = t(rng));
+        TRY(s = gen(rng));
         TEST_MATCH(s, "^\\((abc|def|ghi)\\)$");
         ++census[s];
     }
@@ -320,5 +321,50 @@ void test_rs_game_text_generation_transform() {
         TEST_MATCH(s, "^(ABC|DEF|GHI)$");
         ++census[s];
     }
+
+}
+
+void test_rs_game_text_generation_literals() {
+
+    TextGen gen;
+    StdRng rng(42);
+    std::string s;
+    std::map<std::string, int> census;
+
+    TRY(gen = "abc"_tg);
+
+    for (int i = 0; i < 1000; ++i) {
+        TRY(s = gen(rng));
+        TEST_EQUAL(s, "abc");
+    }
+
+    TRY(gen = "abc def ghi"_tg);
+
+    for (int i = 0; i < 1000; ++i) {
+        TRY(s = gen(rng));
+        TEST_MATCH(s, "^(abc|def|ghi)$");
+        ++census[s];
+    }
+
+    TEST_EQUAL(census.size(), 3u);
+    TEST_NEAR(census["abc"], 333, 50);
+    TEST_NEAR(census["def"], 333, 50);
+    TEST_NEAR(census["ghi"], 333, 50);
+
+    TRY(gen = 5_tg);
+    census.clear();
+
+    for (int i = 0; i < 1000; ++i) {
+        TRY(s = gen(rng));
+        TEST_MATCH(s, "^[1-5]$");
+        ++census[s];
+    }
+
+    TEST_EQUAL(census.size(), 5u);
+    TEST_NEAR(census["1"], 200, 50);
+    TEST_NEAR(census["2"], 200, 50);
+    TEST_NEAR(census["3"], 200, 50);
+    TEST_NEAR(census["4"], 200, 50);
+    TEST_NEAR(census["5"], 200, 50);
 
 }

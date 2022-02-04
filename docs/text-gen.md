@@ -7,60 +7,83 @@ _[Game Library by Ross Smith](index.html)_
 namespace RS::Game;
 ```
 
-## Text generators
+## Contents
+
+* TOC
+{:toc}
+
+## Supporting types
 
 ```c++
 using StringFunction = std::function<std::string(const std::string&)>;
 using StringList = std::vector<std::string>;
-using TextList = std::vector<TextGenerator>;
-using TextWeights = std::vector<std::pair<TextGenerator, double>>;
+using TextList = std::vector<TextGen>;
+using TextWeights = std::vector<std::pair<TextGen, double>>;
 ```
 
 Aliases for convenience.
 
+## TextGen class
+
 ```c++
-class TextGenerator {
-    using result_type = std::string;
-    TextGenerator();
-    TextGenerator(const std::string& str);
-    TextGenerator(const std::string_view& str);
-    TextGenerator(const char* str);
-    TextGenerator(char c);
-    TextGenerator(char32_t c);
-    TextGenerator(const TextGenerator& g);
-    TextGenerator(TextGenerator&& g) noexcept;
-    ~TextGenerator() noexcept;
-    TextGenerator& operator=(const TextGenerator& g);
-    TextGenerator& operator=(TextGenerator&& g) noexcept;
-    std::string operator()(Sci::StdRng& rng) const;
-};
+class TextGen;
 ```
 
-The text generator class. A text generator constructed in the normal way
-yields a fixed string, or an empty string if it was default constructed. The
-functions and operators below act as generator combinators.
+The text generator class.
 
 ```c++
-template <typename T> TextGenerator str(T&& t);
+using result_type = std::string;
 ```
 
-The argument can be a string or character; this calls the corresponding
-`TextGenerator` constructor.
+Return type.
 
 ```c++
-TextGenerator number(int min, int max);
+TextGen();
+```
+
+A default constructed generator will always return an empty string.
+
+```c++
+TextGen(const std::string& str);
+TextGen(const std::string_view& str);
+TextGen(const char* str);
+TextGen(char c);
+TextGen(char32_t c);
+```
+
+All of these construct a generator that always returns the same string.
+
+```c++
+TextGen(const TextGen& g);
+TextGen(TextGen&& g) noexcept;
+~TextGen() noexcept;
+TextGen& operator=(const TextGen& g);
+TextGen& operator=(TextGen&& g) noexcept;
+```
+
+Other life cycle functions.
+
+```c++
+std::string operator()(Sci::StdRng& rng) const;
+```
+
+Generates a string.
+
+```c++
+staticTextGen TextGen::number(int min, int max);
 ```
 
 Generates a random integer between `min` and `max` inclusive, and returns it
-as a string. This will throw `std::invalid_argument` if `min>max`.
+as a decimal string. This will throw `std::invalid_argument` if `min>max`.
 
 ```c++
-TextGenerator choose(const std::string& list);
-TextGenerator choose(const StringList& list);
-TextGenerator choose(const TextList& list);
-TextGenerator choose(std::initializer_list<TextGenerator> list);
-TextGenerator choose(const TextWeights& weights);
-TextGenerator choose(std::initializer_list<std::pair<TextGenerator, double>> weights);
+staticTextGen TextGen::choice(const std::string& list);
+staticTextGen TextGen::choice(const StringList& list);
+staticTextGen TextGen::choice(const TextList& list);
+staticTextGen TextGen::choice(std::initializer_list<TextGen> list);
+staticTextGen TextGen::choice(const TextWeights& weights);
+staticTextGen TextGen::choice(std::initializer_list<
+    std::pair<TextGen, double>> weights);
 ```
 
 These create a generator that calls one of a set of generators, chosen at
@@ -74,26 +97,28 @@ empty. The first version will throw if the string is not valid UTF-8. The
 weighted versions will throw if any weight is negative, or if all weights are
 zero.
 
+## Generator combinators
+
 ```c++
-TextGenerator operator+(const TextGenerator& a, const TextGenerator& b);
-TextGenerator& operator+=(TextGenerator& a, const TextGenerator& b);
+TextGen operator+(const TextGen& a, const TextGen& b);
+TextGen& operator+=(TextGen& a, const TextGen& b);
 ```
 
 Concatenates the output of two generators.
 
 ```c++
-TextGenerator operator|(const TextGenerator& a, const TextGenerator& b);
-TextGenerator& operator|=(TextGenerator& a, const TextGenerator& b);
+TextGen operator|(const TextGen& a, const TextGen& b);
+TextGen& operator|=(TextGen& a, const TextGen& b);
 ```
 
 Returns the result of either generator at random. This operator can be chained
 to create multiple choices with equal probability, as in the unweighted
-versions of `choose()`; for example, `A|B|C|D` will call one of the generators
-with probability 1/4, equivalent to `choose(A,B,C,D)`.
+versions of `choice()`; for example, `A|B|C|D` will call one of the generators
+with probability 1/4, equivalent to `choice(A,B,C,D)`.
 
 ```c++
-TextGenerator operator*(const TextGenerator& g, int n);
-TextGenerator& operator*=(TextGenerator& g, int n);
+TextGen operator*(const TextGen& g, int n);
+TextGen& operator*=(TextGen& g, int n);
 ```
 
 `G*n` calls the generator `n` times and concatenates the results; `G*m*n`
@@ -101,16 +126,29 @@ generates a random number from `m` to `n` and concatenates that many calls.
 This will throw `std::invalid_argument` if `m>n`.
 
 ```c++
-TextGenerator operator%(const TextGenerator& g, double p);
-TextGenerator& operator%=(TextGenerator& g, double p);
+TextGen operator%(const TextGen& g, double p);
+TextGen& operator%=(TextGen& g, double p);
 ```
 
 Calls the generator with probability `p`, otherwise returns an empty string.
 This will throw `std::invalid_argument` if `p<0` or `p>1`.
 
 ```c++
-TextGenerator operator>>(const TextGenerator& g, StringFunction f);
-TextGenerator& operator>>=(TextGenerator& g, StringFunction f);
+TextGen operator>>(const TextGen& g, StringFunction f);
+TextGen& operator>>=(TextGen& g, StringFunction f);
 ```
 
 Calls the function on the output of the generator and returns the result.
+
+## Generator literals
+
+```c++
+namespace Literals {
+    TextGen operator""_tg(const char* ptr, size_t len);
+    TextGen operator""_tg(unsigned long long n);
+}
+```
+
+The string-based literal splits the string into words delimited by whitespace,
+and constructs a generator that will return one of the strings at random. The
+integer-based literal is equivalent to `TextGen::number(1,n)`.
