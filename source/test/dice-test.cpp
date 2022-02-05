@@ -174,3 +174,66 @@ void test_rs_game_dice_literals() {
     TRY(dice = "5d20"_dice);  TEST_EQUAL(dice.str(), "5d20");
 
 }
+
+void test_rs_game_dice_pdf() {
+
+    Dice d;
+
+    TRY(d = 1_d6);
+
+    TEST_EQUAL(d.pdf(0),  0         );       TEST_EQUAL(d.cdf(0),  0         );       TEST_EQUAL(d.ccdf(0),  1         );
+    TEST_NEAR(d.pdf(1),   1.0/6.0,  1e-10);  TEST_NEAR(d.cdf(1),   1.0/6.0,  1e-10);  TEST_EQUAL(d.ccdf(1),  1         );
+    TEST_NEAR(d.pdf(2),   1.0/6.0,  1e-10);  TEST_NEAR(d.cdf(2),   2.0/6.0,  1e-10);  TEST_NEAR(d.ccdf(2),   5.0/6.0,  1e-10);
+    TEST_NEAR(d.pdf(3),   1.0/6.0,  1e-10);  TEST_NEAR(d.cdf(3),   3.0/6.0,  1e-10);  TEST_NEAR(d.ccdf(3),   4.0/6.0,  1e-10);
+    TEST_NEAR(d.pdf(4),   1.0/6.0,  1e-10);  TEST_NEAR(d.cdf(4),   4.0/6.0,  1e-10);  TEST_NEAR(d.ccdf(4),   3.0/6.0,  1e-10);
+    TEST_NEAR(d.pdf(5),   1.0/6.0,  1e-10);  TEST_NEAR(d.cdf(5),   5.0/6.0,  1e-10);  TEST_NEAR(d.ccdf(5),   2.0/6.0,  1e-10);
+    TEST_NEAR(d.pdf(6),   1.0/6.0,  1e-10);  TEST_EQUAL(d.cdf(6),  1         );       TEST_NEAR(d.ccdf(6),   1.0/6.0,  1e-10);
+    TEST_EQUAL(d.pdf(7),  0         );       TEST_EQUAL(d.cdf(7),  1         );       TEST_EQUAL(d.ccdf(7),  0         );
+
+    TRY(d = 3_d6);
+
+    TEST_EQUAL(d.pdf(2),   0            );       TEST_EQUAL(d.cdf(2),   0             );       TEST_EQUAL(d.ccdf(2),   1             );
+    TEST_NEAR(d.pdf(3),    1.0/216.0,   1e-10);  TEST_NEAR(d.cdf(3),    1.0/216.0,    1e-10);  TEST_EQUAL(d.ccdf(3),   1             );
+    TEST_NEAR(d.pdf(4),    3.0/216.0,   1e-10);  TEST_NEAR(d.cdf(4),    4.0/216.0,    1e-10);  TEST_NEAR(d.ccdf(4),    215.0/216.0,  1e-10);
+    TEST_NEAR(d.pdf(5),    6.0/216.0,   1e-10);  TEST_NEAR(d.cdf(5),    10.0/216.0,   1e-10);  TEST_NEAR(d.ccdf(5),    212.0/216.0,  1e-10);
+    TEST_NEAR(d.pdf(6),    10.0/216.0,  1e-10);  TEST_NEAR(d.cdf(6),    20.0/216.0,   1e-10);  TEST_NEAR(d.ccdf(6),    206.0/216.0,  1e-10);
+    TEST_NEAR(d.pdf(7),    15.0/216.0,  1e-10);  TEST_NEAR(d.cdf(7),    35.0/216.0,   1e-10);  TEST_NEAR(d.ccdf(7),    196.0/216.0,  1e-10);
+    TEST_NEAR(d.pdf(8),    21.0/216.0,  1e-10);  TEST_NEAR(d.cdf(8),    56.0/216.0,   1e-10);  TEST_NEAR(d.ccdf(8),    181.0/216.0,  1e-10);
+    TEST_NEAR(d.pdf(9),    25.0/216.0,  1e-10);  TEST_NEAR(d.cdf(9),    81.0/216.0,   1e-10);  TEST_NEAR(d.ccdf(9),    160.0/216.0,  1e-10);
+    TEST_NEAR(d.pdf(10),   27.0/216.0,  1e-10);  TEST_NEAR(d.cdf(10),   108.0/216.0,  1e-10);  TEST_NEAR(d.ccdf(10),   135.0/216.0,  1e-10);
+    TEST_NEAR(d.pdf(11),   27.0/216.0,  1e-10);  TEST_NEAR(d.cdf(11),   135.0/216.0,  1e-10);  TEST_NEAR(d.ccdf(11),   108.0/216.0,  1e-10);
+    TEST_NEAR(d.pdf(12),   25.0/216.0,  1e-10);  TEST_NEAR(d.cdf(12),   160.0/216.0,  1e-10);  TEST_NEAR(d.ccdf(12),   81.0/216.0,   1e-10);
+    TEST_NEAR(d.pdf(13),   21.0/216.0,  1e-10);  TEST_NEAR(d.cdf(13),   181.0/216.0,  1e-10);  TEST_NEAR(d.ccdf(13),   56.0/216.0,   1e-10);
+    TEST_NEAR(d.pdf(14),   15.0/216.0,  1e-10);  TEST_NEAR(d.cdf(14),   196.0/216.0,  1e-10);  TEST_NEAR(d.ccdf(14),   35.0/216.0,   1e-10);
+    TEST_NEAR(d.pdf(15),   10.0/216.0,  1e-10);  TEST_NEAR(d.cdf(15),   206.0/216.0,  1e-10);  TEST_NEAR(d.ccdf(15),   20.0/216.0,   1e-10);
+    TEST_NEAR(d.pdf(16),   6.0/216.0,   1e-10);  TEST_NEAR(d.cdf(16),   212.0/216.0,  1e-10);  TEST_NEAR(d.ccdf(16),   10.0/216.0,   1e-10);
+    TEST_NEAR(d.pdf(17),   3.0/216.0,   1e-10);  TEST_NEAR(d.cdf(17),   215.0/216.0,  1e-10);  TEST_NEAR(d.ccdf(17),   4.0/216.0,    1e-10);
+    TEST_NEAR(d.pdf(18),   1.0/216.0,   1e-10);  TEST_EQUAL(d.cdf(18),  1             );       TEST_NEAR(d.ccdf(18),   1.0/216.0,    1e-10);
+    TEST_EQUAL(d.pdf(19),  0            );       TEST_EQUAL(d.cdf(19),  1             );       TEST_EQUAL(d.ccdf(19),  0             );
+
+    TRY(d = 2_d6 + 1_d10 - 2);
+
+    TEST_EQUAL(d.pdf(0),   0            );       TEST_EQUAL(d.cdf(0),   0             );       TEST_EQUAL(d.ccdf(0),   1             );
+    TEST_NEAR(d.pdf(1),    1.0/360.0,   1e-10);  TEST_NEAR(d.cdf(1),    1.0/360.0,    1e-10);  TEST_EQUAL(d.ccdf(1),   1             );
+    TEST_NEAR(d.pdf(2),    3.0/360.0,   1e-10);  TEST_NEAR(d.cdf(2),    4.0/360.0,    1e-10);  TEST_NEAR(d.ccdf(2),    359.0/360.0,  1e-10);
+    TEST_NEAR(d.pdf(3),    6.0/360.0,   1e-10);  TEST_NEAR(d.cdf(3),    10.0/360.0,   1e-10);  TEST_NEAR(d.ccdf(3),    356.0/360.0,  1e-10);
+    TEST_NEAR(d.pdf(4),    10.0/360.0,  1e-10);  TEST_NEAR(d.cdf(4),    20.0/360.0,   1e-10);  TEST_NEAR(d.ccdf(4),    350.0/360.0,  1e-10);
+    TEST_NEAR(d.pdf(5),    15.0/360.0,  1e-10);  TEST_NEAR(d.cdf(5),    35.0/360.0,   1e-10);  TEST_NEAR(d.ccdf(5),    340.0/360.0,  1e-10);
+    TEST_NEAR(d.pdf(6),    21.0/360.0,  1e-10);  TEST_NEAR(d.cdf(6),    56.0/360.0,   1e-10);  TEST_NEAR(d.ccdf(6),    325.0/360.0,  1e-10);
+    TEST_NEAR(d.pdf(7),    26.0/360.0,  1e-10);  TEST_NEAR(d.cdf(7),    82.0/360.0,   1e-10);  TEST_NEAR(d.ccdf(7),    304.0/360.0,  1e-10);
+    TEST_NEAR(d.pdf(8),    30.0/360.0,  1e-10);  TEST_NEAR(d.cdf(8),    112.0/360.0,  1e-10);  TEST_NEAR(d.ccdf(8),    278.0/360.0,  1e-10);
+    TEST_NEAR(d.pdf(9),    33.0/360.0,  1e-10);  TEST_NEAR(d.cdf(9),    145.0/360.0,  1e-10);  TEST_NEAR(d.ccdf(9),    248.0/360.0,  1e-10);
+    TEST_NEAR(d.pdf(10),   35.0/360.0,  1e-10);  TEST_NEAR(d.cdf(10),   180.0/360.0,  1e-10);  TEST_NEAR(d.ccdf(10),   215.0/360.0,  1e-10);
+    TEST_NEAR(d.pdf(11),   35.0/360.0,  1e-10);  TEST_NEAR(d.cdf(11),   215.0/360.0,  1e-10);  TEST_NEAR(d.ccdf(11),   180.0/360.0,  1e-10);
+    TEST_NEAR(d.pdf(12),   33.0/360.0,  1e-10);  TEST_NEAR(d.cdf(12),   248.0/360.0,  1e-10);  TEST_NEAR(d.ccdf(12),   145.0/360.0,  1e-10);
+    TEST_NEAR(d.pdf(13),   30.0/360.0,  1e-10);  TEST_NEAR(d.cdf(13),   278.0/360.0,  1e-10);  TEST_NEAR(d.ccdf(13),   112.0/360.0,  1e-10);
+    TEST_NEAR(d.pdf(14),   26.0/360.0,  1e-10);  TEST_NEAR(d.cdf(14),   304.0/360.0,  1e-10);  TEST_NEAR(d.ccdf(14),   82.0/360.0,   1e-10);
+    TEST_NEAR(d.pdf(15),   21.0/360.0,  1e-10);  TEST_NEAR(d.cdf(15),   325.0/360.0,  1e-10);  TEST_NEAR(d.ccdf(15),   56.0/360.0,   1e-10);
+    TEST_NEAR(d.pdf(16),   15.0/360.0,  1e-10);  TEST_NEAR(d.cdf(16),   340.0/360.0,  1e-10);  TEST_NEAR(d.ccdf(16),   35.0/360.0,   1e-10);
+    TEST_NEAR(d.pdf(17),   10.0/360.0,  1e-10);  TEST_NEAR(d.cdf(17),   350.0/360.0,  1e-10);  TEST_NEAR(d.ccdf(17),   20.0/360.0,   1e-10);
+    TEST_NEAR(d.pdf(18),   6.0/360.0,   1e-10);  TEST_NEAR(d.cdf(18),   356.0/360.0,  1e-10);  TEST_NEAR(d.ccdf(18),   10.0/360.0,   1e-10);
+    TEST_NEAR(d.pdf(19),   3.0/360.0,   1e-10);  TEST_NEAR(d.cdf(19),   359.0/360.0,  1e-10);  TEST_NEAR(d.ccdf(19),   4.0/360.0,    1e-10);
+    TEST_NEAR(d.pdf(20),   1.0/360.0,   1e-10);  TEST_EQUAL(d.cdf(20),  1             );       TEST_NEAR(d.ccdf(20),   1.0/360.0,    1e-10);
+    TEST_EQUAL(d.pdf(21),  0            );       TEST_EQUAL(d.cdf(21),  1             );       TEST_EQUAL(d.ccdf(21),  0             );
+
+}

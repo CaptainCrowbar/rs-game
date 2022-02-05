@@ -145,7 +145,17 @@ Sci::Rational Dice::min() const noexcept;
 Sci::Rational Dice::max() const noexcept;
 ```
 
-These return statistical properties of the dice roll results.
+Statistical properties of the dice roll result distribution.
+
+```c++
+double Dice::pdf(const Sci::Rational& x);   // Pr(result==x)
+double Dice::cdf(const Sci::Rational& x);   // Pr(result<=x)
+double Dice::ccdf(const Sci::Rational& x);  // Pr(result>=x)
+```
+
+Probabilities of given results. These are not `const` because the object needs
+to compute a probability table the first time one of these is called.
+(Caution: this can take some time for complicated distributions.)
 
 ```c++
 std::string Dice::str() const;

@@ -12,6 +12,7 @@ int main(int argc, char** argv) {
     UNIT_TEST(rs_game_dice_parser)
     UNIT_TEST(rs_game_dice_generation)
     UNIT_TEST(rs_game_dice_literals)
+    UNIT_TEST(rs_game_dice_pdf)
 
     // english-test.cpp
     UNIT_TEST(rs_game_english_case_conversion)

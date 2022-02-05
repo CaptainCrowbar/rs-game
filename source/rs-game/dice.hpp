@@ -2,6 +2,8 @@
 
 #include "rs-format/string.hpp"
 #include "rs-sci/rational.hpp"
+#include <map>
+#include <memory>
 #include <ostream>
 #include <random>
 #include <string>
@@ -16,8 +18,8 @@ namespace RS::Game {
         using result_type = Sci::Rational;
 
         Dice() = default;
-        explicit Dice(int n) { insert(n, 6, 1); }
-        Dice(int n, int faces, const Sci::Rational& factor = 1) { insert(n, faces, factor); }
+        explicit Dice(int n) { insert(n, 6, 1); updated(); }
+        Dice(int n, int faces, const Sci::Rational& factor = 1) { insert(n, faces, factor); updated(); }
         explicit Dice(const std::string& str);
 
         template <typename RNG> Sci::Rational operator()(RNG& rng);
@@ -25,11 +27,11 @@ namespace RS::Game {
         Dice operator+() const { return *this; }
         Dice operator-() const;
         Dice& operator+=(const Dice& b);
-        Dice& operator+=(const Sci::Rational& b) { modifier_ += b; return *this; }
-        Dice& operator+=(int b) { modifier_ += b; return *this; }
+        Dice& operator+=(const Sci::Rational& b);
+        Dice& operator+=(int b);
         Dice& operator-=(const Dice& b);
-        Dice& operator-=(const Sci::Rational& b) { modifier_ -= b; return *this; }
-        Dice& operator-=(int b) { modifier_ -= b; return *this; }
+        Dice& operator-=(const Sci::Rational& b);
+        Dice& operator-=(int b);
         Dice& operator*=(const Sci::Rational& b);
         Dice& operator*=(int b) { return *this *= Sci::Rational(b); }
         Dice& operator/=(const Sci::Rational& b) { return *this *= b.reciprocal(); }
@@ -38,24 +40,43 @@ namespace RS::Game {
         Sci::Rational mean() const noexcept;
         Sci::Rational variance() const noexcept;
         double sd() const noexcept;
-        Sci::Rational min() const noexcept;
-        Sci::Rational max() const noexcept;
+        Sci::Rational min() const noexcept { return min_; }
+        Sci::Rational max() const noexcept { return max_; }
+        double pdf(const Sci::Rational& x);
+        double cdf(const Sci::Rational& x);
+        double ccdf(const Sci::Rational& x);
         std::string str() const;
 
     private:
 
         using distribution_type = std::uniform_int_distribution<int>;
+        using pdf_table = std::map<Sci::Rational, double>;
 
         struct dice_group {
-            distribution_type one_dice;
-            int n_dice;
+            int number;
+            distribution_type each;
             Sci::Rational factor;
         };
 
+        struct probabilites {
+            double pdf;
+            double cdf;
+            double ccdf;
+        };
+
+        using probability_table = std::map<Sci::Rational, probabilites>;
+
         std::vector<dice_group> groups_;
         Sci::Rational modifier_;
+        Sci::Rational min_;
+        Sci::Rational max_;
+        std::shared_ptr<probability_table> table_;
 
         void insert(int n, int faces, const Sci::Rational& factor);
+        void updated() noexcept;
+        void update_table();
+
+        static pdf_table make_table(const dice_group& group);
 
     };
 
@@ -64,8 +85,8 @@ namespace RS::Game {
             Sci::Rational sum = modifier_;
             for (auto& g: groups_) {
                 int roll = 0;
-                for (int i = 0; i < g.n_dice; ++i)
-                    roll += g.one_dice(rng);
+                for (int i = 0; i < g.number; ++i)
+                    roll += g.each(rng);
                 sum += roll * g.factor;
             }
             return sum;
