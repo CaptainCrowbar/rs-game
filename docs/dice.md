@@ -148,9 +148,9 @@ Sci::Rational Dice::max() const noexcept;
 Statistical properties of the dice roll result distribution.
 
 ```c++
-double Dice::pdf(const Sci::Rational& x);   // Pr(result==x)
-double Dice::cdf(const Sci::Rational& x);   // Pr(result<=x)
-double Dice::ccdf(const Sci::Rational& x);  // Pr(result>=x)
+Sci::Rational Dice::pdf(const Sci::Rational& x);   // Pr(result==x)
+Sci::Rational Dice::cdf(const Sci::Rational& x);   // Pr(result<=x)
+Sci::Rational Dice::ccdf(const Sci::Rational& x);  // Pr(result>=x)
 ```
 
 Probabilities of given results. These are not `const` because the object needs

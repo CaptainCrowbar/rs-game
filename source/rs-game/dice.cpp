@@ -92,7 +92,7 @@ namespace RS::Game {
         return *this;
     }
 
-    Dice& Dice::operator+=(const Sci::Rational& b) {
+    Dice& Dice::operator+=(const Rational& b) {
         modifier_ += b;
         updated();
         return *this;
@@ -114,7 +114,7 @@ namespace RS::Game {
         return *this;
     }
 
-    Dice& Dice::operator-=(const Sci::Rational& b) {
+    Dice& Dice::operator-=(const Rational& b) {
         modifier_ -= b;
         updated();
         return *this;
@@ -158,7 +158,7 @@ namespace RS::Game {
         return sqrt(double(variance()));
     }
 
-    double Dice::pdf(const Sci::Rational& x) {
+    Rational Dice::pdf(const Rational& x) {
         update_table();
         auto it = table_->find(x);
         if (it == table_->end())
@@ -167,7 +167,7 @@ namespace RS::Game {
             return it->second.pdf;
     }
 
-    double Dice::cdf(const Sci::Rational& x) {
+    Rational Dice::cdf(const Rational& x) {
         update_table();
         auto it = table_->lower_bound(x);
         if (it == table_->end())
@@ -180,7 +180,7 @@ namespace RS::Game {
             return std::prev(it)->second.cdf;
     }
 
-    double Dice::ccdf(const Sci::Rational& x) {
+    Rational Dice::ccdf(const Rational& x) {
         update_table();
         auto it = table_->lower_bound(x);
         if (it == table_->end())
@@ -280,7 +280,7 @@ namespace RS::Game {
         for (;;) {
 
             auto x = modifier_;
-            double p = 1;
+            Rational p = 1;
 
             for (auto i: iterators) {
                 x += i->first;
@@ -301,7 +301,7 @@ namespace RS::Game {
 
         }
 
-        double cdf = 0;
+        Rational cdf = 0;
         auto j = table_->end();
 
         for (auto& [x,ps]: *table_)
@@ -316,20 +316,21 @@ namespace RS::Game {
         pdf_table table;
         int n = group.number;
         int f = group.each.max();
+        int den = integer_power(f, n);
         int max = f * n;
         double b = n - 1;
 
         for (int i = n; i <= max; ++i) {
 
-            auto x = i * group.factor;
+            int num = 0;
+            int sign = 1;
             double a = i - 1;
-            double p = 0;
-            double sign = 1;
 
             for (int j = 0; j < n; ++j, a -= f, sign = - sign)
-                p += sign * binomial(a, b) * binomial(double(n), double(j));
+                num += sign * int(std::lround(binomial(a, b) * binomial(double(n), double(j))));
 
-            p *= std::pow(double(f), - double(n));
+            Rational x = i * group.factor;
+            Rational p(num, den);
             table.insert({x, p});
 
         }

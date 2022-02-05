@@ -42,15 +42,15 @@ namespace RS::Game {
         double sd() const noexcept;
         Sci::Rational min() const noexcept { return min_; }
         Sci::Rational max() const noexcept { return max_; }
-        double pdf(const Sci::Rational& x);
-        double cdf(const Sci::Rational& x);
-        double ccdf(const Sci::Rational& x);
+        Sci::Rational pdf(const Sci::Rational& x);
+        Sci::Rational cdf(const Sci::Rational& x);
+        Sci::Rational ccdf(const Sci::Rational& x);
         std::string str() const;
 
     private:
 
         using distribution_type = std::uniform_int_distribution<int>;
-        using pdf_table = std::map<Sci::Rational, double>;
+        using pdf_table = std::map<Sci::Rational, Sci::Rational>;
 
         struct dice_group {
             int number;
@@ -59,9 +59,9 @@ namespace RS::Game {
         };
 
         struct probabilites {
-            double pdf;
-            double cdf;
-            double ccdf;
+            Sci::Rational pdf;
+            Sci::Rational cdf;
+            Sci::Rational ccdf;
         };
 
         using probability_table = std::map<Sci::Rational, probabilites>;
