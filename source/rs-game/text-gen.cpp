@@ -120,7 +120,7 @@ namespace RS::Game {
     base_(std::make_shared<Detail::FixedText>(str)) {}
 
     TextGen::TextGen(char32_t c):
-    base_(std::make_shared<Detail::FixedText>(encode_utf8_string({c}))) {}
+    base_(std::make_shared<Detail::FixedText>(to_utf8({c}))) {}
 
     std::string TextGen::operator()(StdRng& rng) const {
         if (base_)
@@ -139,7 +139,7 @@ namespace RS::Game {
         auto utf32 = decode_string(list);
         BaseList base_list;
         std::transform(utf32.begin(), utf32.end(), append(base_list),
-            [] (char32_t c) { return gen2base(encode_utf8_string({c})); });
+            [] (char32_t c) { return gen2base(to_utf8({c})); });
         return base2gen<SelectText>(base_list);
     }
 
