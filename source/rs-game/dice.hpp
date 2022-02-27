@@ -4,6 +4,7 @@
 #include "rs-sci/rational.hpp"
 #include <map>
 #include <memory>
+#include <mutex>
 #include <ostream>
 #include <random>
 #include <string>
@@ -18,8 +19,8 @@ namespace RS::Game {
         using result_type = Sci::Rational;
 
         Dice() = default;
-        explicit Dice(int n) { insert(n, 6, 1); updated(); }
-        Dice(int n, int faces, const Sci::Rational& factor = 1) { insert(n, faces, factor); updated(); }
+        explicit Dice(int n) { insert(n, 6, 1); modified(); }
+        Dice(int n, int faces, const Sci::Rational& factor = 1) { insert(n, faces, factor); modified(); }
         explicit Dice(const std::string& str);
 
         template <typename RNG> Sci::Rational operator()(RNG& rng);
@@ -42,10 +43,10 @@ namespace RS::Game {
         double sd() const noexcept;
         Sci::Rational min() const noexcept { return min_; }
         Sci::Rational max() const noexcept { return max_; }
-        Sci::Rational pdf(const Sci::Rational& x);
-        Sci::Rational cdf(const Sci::Rational& x);
-        Sci::Rational ccdf(const Sci::Rational& x);
-        Sci::Rational interval(const Sci::Rational& x, const Sci::Rational& y);
+        Sci::Rational pdf(const Sci::Rational& x) const;
+        Sci::Rational cdf(const Sci::Rational& x) const;
+        Sci::Rational ccdf(const Sci::Rational& x) const;
+        Sci::Rational interval(const Sci::Rational& x, const Sci::Rational& y) const;
         std::string str() const;
 
     private:
@@ -67,15 +68,20 @@ namespace RS::Game {
 
         using probability_table = std::map<Sci::Rational, probabilites>;
 
+        struct table_info {
+            probability_table table;
+            std::mutex mutex;
+        };
+
         std::vector<dice_group> groups_;
-        Sci::Rational modifier_;
+        Sci::Rational add_;
         Sci::Rational min_;
         Sci::Rational max_;
-        std::shared_ptr<probability_table> table_;
+        std::shared_ptr<table_info> info_;
 
+        bool check_table() const;
         void insert(int n, int faces, const Sci::Rational& factor);
-        void updated() noexcept;
-        void update_table();
+        void modified();
 
         static pdf_table make_table(const dice_group& group);
 
@@ -83,7 +89,7 @@ namespace RS::Game {
 
         template <typename RNG>
         Sci::Rational Dice::operator()(RNG& rng) {
-            Sci::Rational sum = modifier_;
+            Sci::Rational sum = add_;
             for (auto& g: groups_) {
                 int roll = 0;
                 for (int i = 0; i < g.number; ++i)

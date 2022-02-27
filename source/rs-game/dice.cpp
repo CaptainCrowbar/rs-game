@@ -53,7 +53,7 @@ namespace RS::Game {
             if (match.matched(6)) {
 
                 auto factor = parse_integer(std::string(match[6]), 1);
-                modifier_ += Rational(sign * factor, divisor);
+                add_ += Rational(sign * factor, divisor);
 
             } else {
 
@@ -69,7 +69,7 @@ namespace RS::Game {
 
         }
 
-        updated();
+        modified();
 
     }
 
@@ -77,8 +77,8 @@ namespace RS::Game {
         Dice d = *this;
         for (auto& g: d.groups_)
             g.factor = - g.factor;
-        d.modifier_ = - d.modifier_;
-        d.updated();
+        d.add_ = - d.add_;
+        d.modified();
         return d;
     }
 
@@ -86,21 +86,21 @@ namespace RS::Game {
         Dice d = *this;
         for (auto& g: rhs.groups_)
             d.insert(g.number, g.each.b(), g.factor);
-        d.modifier_ += rhs.modifier_;
-        d.updated();
+        d.add_ += rhs.add_;
+        d.modified();
         *this = std::move(d);
         return *this;
     }
 
     Dice& Dice::operator+=(const Rational& b) {
-        modifier_ += b;
-        updated();
+        add_ += b;
+        modified();
         return *this;
     }
 
     Dice& Dice::operator+=(int b) {
-        modifier_ += b;
-        updated();
+        add_ += b;
+        modified();
         return *this;
     }
 
@@ -108,21 +108,21 @@ namespace RS::Game {
         Dice d = *this;
         for (auto& g: rhs.groups_)
             d.insert(g.number, g.each.b(), - g.factor);
-        d.modifier_ -= rhs.modifier_;
-        d.updated();
+        d.add_ -= rhs.add_;
+        d.modified();
         *this = std::move(d);
         return *this;
     }
 
     Dice& Dice::operator-=(const Rational& b) {
-        modifier_ -= b;
-        updated();
+        add_ -= b;
+        modified();
         return *this;
     }
 
     Dice& Dice::operator-=(int b) {
-        modifier_ -= b;
-        updated();
+        add_ -= b;
+        modified();
         return *this;
     }
 
@@ -130,17 +130,17 @@ namespace RS::Game {
         if (rhs) {
             for (auto& g: groups_)
                 g.factor *= rhs;
-            modifier_ *= rhs;
+            add_ *= rhs;
         } else {
             groups_.clear();
-            modifier_ = 0;
+            add_ = 0;
         }
-        updated();
+        modified();
         return *this;
     }
 
     Rational Dice::mean() const noexcept {
-        Rational sum = modifier_;
+        Rational sum = add_;
         for (auto& g: groups_)
             sum += Rational(g.number * (g.each.b() + 1)) * g.factor / Rational(2);
         return sum;
@@ -158,38 +158,41 @@ namespace RS::Game {
         return sqrt(double(variance()));
     }
 
-    Rational Dice::pdf(const Rational& x) {
-        update_table();
-        auto it = table_->find(x);
-        if (it == table_->end())
+    Rational Dice::pdf(const Rational& x) const {
+        if (! check_table())
+            return 0;
+        auto it = info_->table.find(x);
+        if (it == info_->table.end())
             return 0;
         else
             return it->second.pdf;
     }
 
-    Rational Dice::cdf(const Rational& x) {
-        update_table();
-        auto it = table_->lower_bound(x);
-        if (it == table_->end())
+    Rational Dice::cdf(const Rational& x) const {
+        if (! check_table())
+            return 0;
+        auto it = info_->table.lower_bound(x);
+        if (it == info_->table.end())
             return 1;
         else if (it->first == x)
             return it->second.cdf;
-        else if (it == table_->begin())
+        else if (it == info_->table.begin())
             return 0;
         else
             return std::prev(it)->second.cdf;
     }
 
-    Rational Dice::ccdf(const Rational& x) {
-        update_table();
-        auto it = table_->lower_bound(x);
-        if (it == table_->end())
+    Rational Dice::ccdf(const Rational& x) const {
+        if (! check_table())
+            return 0;
+        auto it = info_->table.lower_bound(x);
+        if (it == info_->table.end())
             return 0;
         else
             return it->second.ccdf;
     }
 
-    Rational Dice::interval(const Rational& x, const Rational& y) {
+    Rational Dice::interval(const Rational& x, const Rational& y) const {
         return cdf(y) - cdf(x - 1);
     }
 
@@ -210,10 +213,10 @@ namespace RS::Game {
                 text += '/' + std::to_string(d);
         }
 
-        if (modifier_ > 0)
+        if (add_ > 0)
             text += '+';
-        if (modifier_)
-            text += modifier_.str();
+        if (add_)
+            text += add_.str();
 
         if (text[0] == '+')
             text.erase(0, 1);
@@ -221,6 +224,58 @@ namespace RS::Game {
             text = "0";
 
         return text;
+
+    }
+
+    bool Dice::check_table() const {
+
+        if (! info_)
+            return false;
+
+        auto lock = std::unique_lock(info_->mutex);
+
+        if (! info_->table.empty())
+            return true;
+
+        int n = int(groups_.size());
+        std::vector<pdf_table> subtables(n);
+        std::transform(groups_.begin(), groups_.end(), subtables.begin(), make_table);
+        std::vector<pdf_table::const_iterator> iterators(n);
+        std::transform(subtables.begin(), subtables.end(), iterators.begin(), [] (auto& sub) { return sub.begin(); });
+
+        for (;;) {
+
+            auto x = add_;
+            Rational p = 1;
+
+            for (auto i: iterators) {
+                x += i->first;
+                p *= i->second;
+            }
+
+            info_->table[x].pdf += p;
+
+            int i = n - 1;
+            for (; i >= 0; --i) {
+                ++iterators[i];
+                if (iterators[i] != subtables[i].end())
+                    break;
+                iterators[i] = subtables[i].begin();
+            }
+            if (i == -1)
+                break;
+
+        }
+
+        Rational cdf = 0;
+        auto j = info_->table.end();
+
+        for (auto& [x,ps]: info_->table)
+            (--j)->second.ccdf = ps.cdf = cdf = cdf + ps.pdf;
+
+        info_->table.begin()->second.ccdf = std::prev(info_->table.end())->second.cdf = 1;
+
+        return true;
 
     }
 
@@ -251,9 +306,10 @@ namespace RS::Game {
 
     }
 
-    void Dice::updated() noexcept {
+    void Dice::modified() {
 
-        min_ = max_ = modifier_;
+        info_ = std::make_shared<table_info>();
+        min_ = max_ = add_;
 
         for (auto& g: groups_) {
             if (g.factor > 0) {
@@ -264,54 +320,6 @@ namespace RS::Game {
                 max_ += Rational(g.number) * g.factor;
             }
         }
-
-        table_.reset();
-
-    }
-
-    void Dice::update_table() {
-
-        if (table_)
-            return;
-
-        table_ = std::make_shared<probability_table>();
-        int n = int(groups_.size());
-        std::vector<pdf_table> subtables(n);
-        std::transform(groups_.begin(), groups_.end(), subtables.begin(), make_table);
-        std::vector<pdf_table::const_iterator> iterators(n);
-        std::transform(subtables.begin(), subtables.end(), iterators.begin(), [] (auto& sub) { return sub.begin(); });
-
-        for (;;) {
-
-            auto x = modifier_;
-            Rational p = 1;
-
-            for (auto i: iterators) {
-                x += i->first;
-                p *= i->second;
-            }
-
-            (*table_)[x].pdf += p;
-
-            int i = n - 1;
-            for (; i >= 0; --i) {
-                ++iterators[i];
-                if (iterators[i] != subtables[i].end())
-                    break;
-                iterators[i] = subtables[i].begin();
-            }
-            if (i == -1)
-                break;
-
-        }
-
-        Rational cdf = 0;
-        auto j = table_->end();
-
-        for (auto& [x,ps]: *table_)
-            (--j)->second.ccdf = ps.cdf = cdf = cdf + ps.pdf;
-
-        table_->begin()->second.ccdf = std::prev(table_->end())->second.cdf = 1;
 
     }
 

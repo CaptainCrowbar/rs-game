@@ -179,6 +179,8 @@ void test_rs_game_dice_pdf() {
 
     Dice d;
 
+    TEST_EQUAL(d.pdf(1), 0);  TEST_EQUAL(d.cdf(1), 0);  TEST_EQUAL(d.ccdf(1), 0);
+
     TRY(d = 1_d6);
 
     TEST_EQUAL(d.pdf(0),  0);               TEST_EQUAL(d.cdf(0),  0);               TEST_EQUAL(d.ccdf(0),  1);

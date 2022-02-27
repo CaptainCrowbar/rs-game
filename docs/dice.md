@@ -148,17 +148,19 @@ Sci::Rational Dice::max() const noexcept;
 Statistical properties of the dice roll result distribution.
 
 ```c++
-Sci::Rational Dice::pdf(const Sci::Rational& x);   // Pr(result=x)
-Sci::Rational Dice::cdf(const Sci::Rational& x);   // Pr(result≤x)
-Sci::Rational Dice::ccdf(const Sci::Rational& x);  // Pr(result≥x)
+Sci::Rational Dice::pdf(const Sci::Rational& x) const;   // Pr(result=x)
+Sci::Rational Dice::cdf(const Sci::Rational& x) const;   // Pr(result≤x)
+Sci::Rational Dice::ccdf(const Sci::Rational& x) const;  // Pr(result≥x)
 Sci::Rational Dice::interval(const Sci::Rational& x,
-    const Sci::Rational y);                        // Pr(result∈[x,y])
+    const Sci::Rational y) const;                        // Pr(result∈[x,y])
 ```
 
 Probabilities of given results. The `interval()` function will return zero if
-`x>y`. These are not `const` because the object needs to compute a probability
-table the first time one of these is called. (Caution: this can take some time
-for complicated distributions.)
+`x>y`.
+
+The `Dice` object needs to compute a probability table the first time one of
+these is called. The table is shared between copies of the same object.
+Computing the table can take some time for complicated distributions.
 
 ```c++
 std::string Dice::str() const;
