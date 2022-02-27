@@ -189,6 +189,10 @@ namespace RS::Game {
             return it->second.ccdf;
     }
 
+    Rational Dice::interval(const Rational& x, const Rational& y) {
+        return cdf(y) - cdf(x - 1);
+    }
+
     std::string Dice::str() const {
 
         std::string text;

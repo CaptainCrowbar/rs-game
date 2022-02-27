@@ -236,4 +236,10 @@ void test_rs_game_dice_pdf() {
     TEST_EQUAL(d.pdf(20),  Rational(1, 360));   TEST_EQUAL(d.cdf(20),  1);                   TEST_EQUAL(d.ccdf(20),  Rational(1, 360));
     TEST_EQUAL(d.pdf(21),  0);                  TEST_EQUAL(d.cdf(21),  1);                   TEST_EQUAL(d.ccdf(21),  0);
 
+    TEST_EQUAL(d.interval(1, 2),    Rational(4, 360));
+    TEST_EQUAL(d.interval(2, 4),    Rational(19, 360));
+    TEST_EQUAL(d.interval(4, 8),    Rational(102, 360));
+    TEST_EQUAL(d.interval(8, 16),   Rational(258, 360));
+    TEST_EQUAL(d.interval(16, 32),  Rational(35, 360));
+
 }

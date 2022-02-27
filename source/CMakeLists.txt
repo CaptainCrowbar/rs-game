@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 # and propagate the new version to version.hpp.
 
 project(rs-game
-    VERSION 0.1.21
+    VERSION 0.1.23
     LANGUAGES CXX
 )
 

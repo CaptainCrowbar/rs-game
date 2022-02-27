@@ -45,6 +45,7 @@ namespace RS::Game {
         Sci::Rational pdf(const Sci::Rational& x);
         Sci::Rational cdf(const Sci::Rational& x);
         Sci::Rational ccdf(const Sci::Rational& x);
+        Sci::Rational interval(const Sci::Rational& x, const Sci::Rational& y);
         std::string str() const;
 
     private:
