@@ -92,7 +92,7 @@ Dice& Dice::operator=(Dice&& d) noexcept;
 Other life cycle functions.
 
 ```c++
-template <typename RNG> Sci::Rational Dice::operator()(RNG& rng);
+template <typename RNG> Sci::Rational Dice::operator()(RNG& rng) const;
 ```
 
 The main generator function. The `RNG` class can be any standard conforming
