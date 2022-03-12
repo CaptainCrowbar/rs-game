@@ -1,12 +1,12 @@
 #pragma once
 
 #include "rs-format/string.hpp"
+#include "rs-sci/random.hpp"
 #include "rs-sci/rational.hpp"
 #include <map>
 #include <memory>
 #include <mutex>
 #include <ostream>
-#include <random>
 #include <string>
 #include <vector>
 
@@ -23,7 +23,7 @@ namespace RS::Game {
         Dice(int n, int faces, const Sci::Rational& factor = 1) { insert(n, faces, factor); modified(); }
         explicit Dice(const std::string& str);
 
-        template <typename RNG> Sci::Rational operator()(RNG& rng);
+        template <typename RNG> Sci::Rational operator()(RNG& rng) const;
 
         Dice operator+() const { return *this; }
         Dice operator-() const;
@@ -51,12 +51,12 @@ namespace RS::Game {
 
     private:
 
-        using distribution_type = std::uniform_int_distribution<int>;
+        using distribution_type = Sci::UniformInteger<int>;
         using pdf_table = std::map<Sci::Rational, Sci::Rational>;
 
         struct dice_group {
             int number;
-            distribution_type each;
+            distribution_type one_dice;
             Sci::Rational factor;
         };
 
@@ -88,12 +88,12 @@ namespace RS::Game {
     };
 
         template <typename RNG>
-        Sci::Rational Dice::operator()(RNG& rng) {
+        Sci::Rational Dice::operator()(RNG& rng) const {
             Sci::Rational sum = add_;
             for (auto& g: groups_) {
                 int roll = 0;
                 for (int i = 0; i < g.number; ++i)
-                    roll += g.each(rng);
+                    roll += g.one_dice(rng);
                 sum += roll * g.factor;
             }
             return sum;

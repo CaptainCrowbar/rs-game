@@ -85,7 +85,7 @@ namespace RS::Game {
     Dice& Dice::operator+=(const Dice& rhs) {
         Dice d = *this;
         for (auto& g: rhs.groups_)
-            d.insert(g.number, g.each.b(), g.factor);
+            d.insert(g.number, g.one_dice.max(), g.factor);
         d.add_ += rhs.add_;
         d.modified();
         *this = std::move(d);
@@ -107,7 +107,7 @@ namespace RS::Game {
     Dice& Dice::operator-=(const Dice& rhs) {
         Dice d = *this;
         for (auto& g: rhs.groups_)
-            d.insert(g.number, g.each.b(), - g.factor);
+            d.insert(g.number, g.one_dice.max(), - g.factor);
         d.add_ -= rhs.add_;
         d.modified();
         *this = std::move(d);
@@ -142,14 +142,14 @@ namespace RS::Game {
     Rational Dice::mean() const noexcept {
         Rational sum = add_;
         for (auto& g: groups_)
-            sum += Rational(g.number * (g.each.b() + 1)) * g.factor / Rational(2);
+            sum += Rational(g.number * (g.one_dice.max() + 1)) * g.factor / Rational(2);
         return sum;
     }
 
     Rational Dice::variance() const noexcept {
         Rational sum;
         for (auto& g: groups_)
-            sum += Rational(g.number * (g.each.b() * g.each.b() - 1)) * g.factor * g.factor / Rational(12);
+            sum += Rational(g.number * (g.one_dice.max() * g.one_dice.max() - 1)) * g.factor * g.factor / Rational(12);
         return sum;
     }
 
@@ -204,7 +204,7 @@ namespace RS::Game {
             text += g.factor.sign() == -1 ? '-' : '+';
             if (g.number > 1)
                 text += std::to_string(g.number);
-            text += 'd' + std::to_string(g.each.b());
+            text += 'd' + std::to_string(g.one_dice.max());
             auto n = std::abs(g.factor.num());
             if (n > 1)
                 text += '*' + std::to_string(n);
@@ -282,11 +282,11 @@ namespace RS::Game {
     void Dice::insert(int n, int faces, const Rational& factor) {
 
         static const auto match_terms = [] (const dice_group& g1, const dice_group& g2) noexcept {
-            return g1.each.b() == g2.each.b() && g1.factor == g2.factor;
+            return g1.one_dice.max() == g2.one_dice.max() && g1.factor == g2.factor;
         };
 
         static const auto sort_terms = [] (const dice_group& g1, const dice_group& g2) noexcept {
-            return g1.each.b() == g2.each.b() ? g1.factor < g2.factor : g1.each.b() > g2.each.b();
+            return g1.one_dice.max() == g2.one_dice.max() ? g1.factor < g2.factor : g1.one_dice.max() > g2.one_dice.max();
         };
 
         if (n < 0 || faces < 0)
@@ -295,7 +295,7 @@ namespace RS::Game {
         if (n > 0 && faces > 0 && factor != 0) {
             dice_group g;
             g.number = n;
-            g.each = distribution_type(1, faces);
+            g.one_dice = distribution_type(1, faces);
             g.factor = factor;
             auto it = std::lower_bound(groups_.begin(), groups_.end(), g, sort_terms);
             if (it != groups_.end() && match_terms(*it, g))
@@ -314,9 +314,9 @@ namespace RS::Game {
         for (auto& g: groups_) {
             if (g.factor > 0) {
                 min_ += Rational(g.number) * g.factor;
-                max_ += Rational(g.number * g.each.b()) * g.factor;
+                max_ += Rational(g.number * g.one_dice.max()) * g.factor;
             } else {
-                min_ += Rational(g.number * g.each.b()) * g.factor;
+                min_ += Rational(g.number * g.one_dice.max()) * g.factor;
                 max_ += Rational(g.number) * g.factor;
             }
         }
@@ -327,7 +327,7 @@ namespace RS::Game {
 
         pdf_table table;
         int n = group.number;
-        int f = group.each.max();
+        int f = group.one_dice.max();
         int den = integer_power(f, n);
         int max = f * n;
         double b = n - 1;
