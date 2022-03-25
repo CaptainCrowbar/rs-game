@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 # and propagate the new version to version.hpp.
 
 project(rs-game
-    VERSION 0.1.25
+    VERSION 0.1.26
     LANGUAGES CXX
 )
 
@@ -47,6 +47,7 @@ endfunction()
 
 check_for_library(yes rs-format rs-format.hpp https://github.com/CaptainCrowbar/rs-format)
 check_for_library(yes rs-graphics-core rs-graphics-core.hpp https://github.com/CaptainCrowbar/rs-graphics-core)
+check_for_library(yes rs-io rs-io.hpp https://github.com/CaptainCrowbar/rs-io)
 check_for_library(yes rs-regex rs-regex.hpp https://github.com/CaptainCrowbar/rs-regex)
 check_for_library(yes rs-sci rs-sci.hpp https://github.com/CaptainCrowbar/rs-sci)
 check_for_library(yes rs-tl rs-tl.hpp https://github.com/CaptainCrowbar/rs-tl)
@@ -70,6 +71,7 @@ add_executable(${unittest}
     test/hexmap-geometry-test.cpp
     test/hexmap-building-test.cpp
     test/hexmap-art-test.cpp
+    test/markov-test.cpp
     test/text-gen-test.cpp
     test/version-test.cpp
     test/unit-test.cpp

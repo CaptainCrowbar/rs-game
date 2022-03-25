@@ -1,4 +1,4 @@
-# Text Generation
+# Text Generators
 
 _[Game Library by Ross Smith](index.html)_
 

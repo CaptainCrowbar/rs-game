@@ -33,6 +33,10 @@ int main(int argc, char** argv) {
     UNIT_TEST(rs_game_hexmap_emoji_art)
     UNIT_TEST(rs_game_hexmap_xterm_art)
 
+    // markov-test.cpp
+    UNIT_TEST(rs_game_markov_character_mode)
+    UNIT_TEST(rs_game_markov_string_mode)
+
     // text-gen-test.cpp
     UNIT_TEST(rs_game_text_generation_null)
     UNIT_TEST(rs_game_text_generation_constant)

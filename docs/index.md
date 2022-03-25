@@ -17,6 +17,7 @@ Other libraries required:
 
 * [My formatting library](https://github.com/CaptainCrowbar/rs-format)
 * [My graphics core library](https://github.com/CaptainCrowbar/rs-graphics-core)
+* [My I/O library](https://github.com/CaptainCrowbar/rs-io)
 * [My regex library](https://github.com/CaptainCrowbar/rs-regex)
 * [My scientific library](https://github.com/CaptainCrowbar/rs-sci)
 * [My template library](https://github.com/CaptainCrowbar/rs-tl)
@@ -28,5 +29,6 @@ Other libraries required:
 * [Dice](dice.html)
 * [English language tools](english.html)
 * [Hex mapping](hexmap.html)
-* [Text generation](text-gen.html)
+* [Markov text generator](markov.html)
+* [Text generators](text-gen.html)
 * [Version information](version.html)
