@@ -23,7 +23,8 @@ template <typename T, typename S = [see below]> class Markov {
     using string_type = S;
     using value_type = T;
     Markov() = default;
-    explicit Markov(size_t context, size_t min_length = 1, size_t max_length = npos, MarkovFlags flags = none);
+    explicit Markov(size_t context, size_t min_length = 1,
+        size_t max_length = npos, MarkovFlags flags = none);
     void add(const S& example);
     template <typename RNG> S operator()(RNG& rng) const;
 };
