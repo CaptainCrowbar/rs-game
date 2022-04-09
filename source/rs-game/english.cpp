@@ -22,17 +22,22 @@ namespace RS::Game {
         std::string result;
         auto i = str.begin();
         auto i_end = str.end();
+        auto j = i;
         int words = 0;
 
         while (i != i_end) {
 
-            auto j = std::find_if(i, i_end, ascii_isalpha);
+            j = std::find_if(i, i_end, ascii_isalpha);
             result.append(i, j);
 
             if (j == i_end)
                 break;
 
-            i = std::find_if_not(j, i_end, ascii_isalpha);
+            i = j;
+
+            do i = std::find_if_not(i + 1, i_end, ascii_isalpha);
+                while (*i == '\'');
+
             std::string word(j, i);
             word = ascii_lowercase(word);
             ++words;

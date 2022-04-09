@@ -16,6 +16,7 @@ void test_rs_game_english_case_conversion() {
     TEST_EQUAL(extended_titlecase("the haunting of hill house"),  "The Haunting of Hill House");
     TEST_EQUAL(extended_titlecase("a history of the future"),     "A History of the Future");
     TEST_EQUAL(extended_titlecase("a dog in the manger"),         "A Dog in the Manger");
+    TEST_EQUAL(extended_titlecase("wolf-rayet star's spectrum"),  "Wolf-Rayet Star's Spectrum");
 
 }
 
