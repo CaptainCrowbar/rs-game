@@ -69,8 +69,11 @@ namespace RS::Game {
         // SequenceText class
 
         std::string SequenceText::gen(StdRng& rng) const {
-            auto left = left_->gen(rng);
-            auto right = right_->gen(rng);
+            std::string left, right;
+            do {
+                left = left_->gen(rng);
+                right = right_->gen(rng);
+            } while (! dups_ && left == right);
             return left + right;
         }
 
@@ -178,11 +181,22 @@ namespace RS::Game {
 
     TextGen operator+(const TextGen& a, const TextGen& b) {
         using namespace Detail;
-        return base2gen<SequenceText>(gen2base(a), gen2base(b));
+        return base2gen<SequenceText>(gen2base(a), gen2base(b), true);
     }
 
     TextGen& operator+=(TextGen& a, const TextGen& b) {
         auto t = a + b;
+        a = std::move(t);
+        return a;
+    }
+
+    TextGen operator&(const TextGen& a, const TextGen& b) {
+        using namespace Detail;
+        return base2gen<SequenceText>(gen2base(a), gen2base(b), false);
+    }
+
+    TextGen& operator&=(TextGen& a, const TextGen& b) {
+        auto t = a & b;
         a = std::move(t);
         return a;
     }

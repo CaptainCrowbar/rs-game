@@ -107,6 +107,14 @@ TextGen& operator+=(TextGen& a, const TextGen& b);
 Concatenates the output of two generators.
 
 ```c++
+TextGen operator&(const TextGen& a, const TextGen& b);
+TextGen& operator&=(TextGen& a, const TextGen& b);
+```
+
+Same as `operator+()`, except that the two concatenated strings are guaranteed
+to be different.
+
+```c++
 TextGen operator|(const TextGen& a, const TextGen& b);
 TextGen& operator|=(TextGen& a, const TextGen& b);
 ```

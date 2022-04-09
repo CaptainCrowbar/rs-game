@@ -121,11 +121,12 @@ namespace RS::Game {
         class SequenceText:
         public TextBase {
         public:
-            SequenceText(SharedBase left, SharedBase right): left_(left), right_(right) {}
+            SequenceText(SharedBase left, SharedBase right, bool dups): left_(left), right_(right), dups_(dups) {}
             std::string gen(Sci::StdRng& rng) const override;
         private:
             SharedBase left_;
             SharedBase right_;
+            bool dups_;
         };
 
         class OptionalText:
@@ -165,6 +166,8 @@ namespace RS::Game {
 
     TextGen operator+(const TextGen& a, const TextGen& b);
     TextGen& operator+=(TextGen& a, const TextGen& b);
+    TextGen operator&(const TextGen& a, const TextGen& b);
+    TextGen& operator&=(TextGen& a, const TextGen& b);
     TextGen operator|(const TextGen& a, const TextGen& b);
     TextGen& operator|=(TextGen& a, const TextGen& b);
     TextGen operator*(const TextGen& g, int n);
