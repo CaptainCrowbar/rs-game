@@ -21,6 +21,14 @@ std::string extended_titlecase(const std::string& str);
 Convert a string to title case, checking for common short English words that
 are conventionally set in lower case.
 
+```c++
+std::string sentence_case(const std::string& str);
+```
+
+Convert a string to sentence case. The first ASCII letter after the start of
+the string or a full stop is converted to upper case; the rest of the string
+is left unchanged.
+
 ## List formatting functions
 
 ```c++

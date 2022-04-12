@@ -15,7 +15,8 @@ int main(int argc, char** argv) {
     UNIT_TEST(rs_game_dice_pdf)
 
     // english-test.cpp
-    UNIT_TEST(rs_game_english_case_conversion)
+    UNIT_TEST(rs_game_english_extended_titlecase)
+    UNIT_TEST(rs_game_english_sentence_case)
     UNIT_TEST(rs_game_english_list_formatting)
     UNIT_TEST(rs_game_english_number_formatting)
     UNIT_TEST(rs_game_english_pluralization)

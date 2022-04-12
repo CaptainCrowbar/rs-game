@@ -53,6 +53,24 @@ namespace RS::Game {
 
     }
 
+    std::string sentence_case(const std::string& str) {
+
+        auto result = str;
+        bool up = true;
+
+        for (auto& c: result) {
+            if (c == '.') {
+                up = true;
+            } else if (up && ascii_isalpha(c)) {
+                c = ascii_toupper(c);
+                up = false;
+            }
+        }
+
+        return result;
+
+    }
+
     // List formatting functions
 
     namespace Detail {

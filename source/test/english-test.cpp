@@ -8,7 +8,7 @@
 using namespace RS::Format;
 using namespace RS::Game;
 
-void test_rs_game_english_case_conversion() {
+void test_rs_game_english_extended_titlecase() {
 
     TEST_EQUAL(extended_titlecase(""),                            "");
     TEST_EQUAL(extended_titlecase("hello world"),                 "Hello World");
@@ -17,6 +17,15 @@ void test_rs_game_english_case_conversion() {
     TEST_EQUAL(extended_titlecase("a history of the future"),     "A History of the Future");
     TEST_EQUAL(extended_titlecase("a dog in the manger"),         "A Dog in the Manger");
     TEST_EQUAL(extended_titlecase("wolf-rayet star's spectrum"),  "Wolf-Rayet Star's Spectrum");
+
+}
+
+void test_rs_game_english_sentence_case() {
+
+    TEST_EQUAL(sentence_case(""),                       "");
+    TEST_EQUAL(sentence_case("hello world"),            "Hello world");
+    TEST_EQUAL(sentence_case("hello World"),            "Hello World");
+    TEST_EQUAL(sentence_case("hello world. goodbye."),  "Hello world. Goodbye.");
 
 }
 
