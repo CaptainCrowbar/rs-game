@@ -324,6 +324,32 @@ void test_rs_game_text_generation_transform() {
 
 }
 
+void test_rs_game_text_generation_casing() {
+
+    TextGen gen;
+    StdRng rng(42);
+    std::string s;
+
+    TRY(gen = "hello and goodbye");
+
+    TRY(gen.set(TextGen::option::none));      TRY(s = gen(rng));  TEST_EQUAL(s, "hello and goodbye");
+    TRY(gen.set(TextGen::option::lower));     TRY(s = gen(rng));  TEST_EQUAL(s, "hello and goodbye");
+    TRY(gen.set(TextGen::option::upper));     TRY(s = gen(rng));  TEST_EQUAL(s, "HELLO AND GOODBYE");
+    TRY(gen.set(TextGen::option::title));     TRY(s = gen(rng));  TEST_EQUAL(s, "Hello And Goodbye");
+    TRY(gen.set(TextGen::option::xtitle));    TRY(s = gen(rng));  TEST_EQUAL(s, "Hello and Goodbye");
+    TRY(gen.set(TextGen::option::sentence));  TRY(s = gen(rng));  TEST_EQUAL(s, "Hello and goodbye");
+
+    TRY(gen = "HELLO AND GOODBYE");
+
+    TRY(gen.set(TextGen::option::none));      TRY(s = gen(rng));  TEST_EQUAL(s, "HELLO AND GOODBYE");
+    TRY(gen.set(TextGen::option::lower));     TRY(s = gen(rng));  TEST_EQUAL(s, "hello and goodbye");
+    TRY(gen.set(TextGen::option::upper));     TRY(s = gen(rng));  TEST_EQUAL(s, "HELLO AND GOODBYE");
+    TRY(gen.set(TextGen::option::title));     TRY(s = gen(rng));  TEST_EQUAL(s, "Hello And Goodbye");
+    TRY(gen.set(TextGen::option::xtitle));    TRY(s = gen(rng));  TEST_EQUAL(s, "Hello and Goodbye");
+    TRY(gen.set(TextGen::option::sentence));  TRY(s = gen(rng));  TEST_EQUAL(s, "HELLO AND GOODBYE");
+
+}
+
 void test_rs_game_text_generation_literals() {
 
     TextGen gen;

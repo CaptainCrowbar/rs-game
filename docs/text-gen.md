@@ -38,6 +38,19 @@ using result_type = std::string;
 Return type.
 
 ```c++
+enum case TextGen::option: int {
+    none      = 0,
+    lower     = 1,
+    upper     = 2,
+    title     = 4,
+    xtitle    = 8,
+    sentence  = 16,
+};
+```
+
+Bitmask flags controlling the transformation of the generator's output.
+
+```c++
 TextGen();
 ```
 
@@ -70,19 +83,26 @@ std::string operator()(Sci::StdRng& rng) const;
 Generates a string.
 
 ```c++
-staticTextGen TextGen::number(int min, int max);
+void TextGen::set(option opt);
+```
+
+Set the transformation behaviour of the final output. This will throw
+`std::invalid_argument` if multiple casing transforms are requested.
+
+```c++
+static TextGen TextGen::number(int min, int max);
 ```
 
 Generates a random integer between `min` and `max` inclusive, and returns it
 as a decimal string. This will throw `std::invalid_argument` if `min>max`.
 
 ```c++
-staticTextGen TextGen::choice(const std::string& list);
-staticTextGen TextGen::choice(const StringList& list);
-staticTextGen TextGen::choice(const TextList& list);
-staticTextGen TextGen::choice(std::initializer_list<TextGen> list);
-staticTextGen TextGen::choice(const TextWeights& weights);
-staticTextGen TextGen::choice(std::initializer_list<
+static TextGen TextGen::choice(const std::string& list);
+static TextGen TextGen::choice(const StringList& list);
+static TextGen TextGen::choice(const TextList& list);
+static TextGen TextGen::choice(std::initializer_list<TextGen> list);
+static TextGen TextGen::choice(const TextWeights& weights);
+static TextGen TextGen::choice(std::initializer_list<
     std::pair<TextGen, double>> weights);
 ```
 

@@ -1,4 +1,6 @@
 #include "rs-game/text-gen.hpp"
+#include "rs-game/english.hpp"
+#include "rs-tl/binary.hpp"
 #include "rs-tl/iterator.hpp"
 #include "rs-format/string.hpp"
 #include "rs-format/unicode.hpp"
@@ -126,10 +128,27 @@ namespace RS::Game {
     base_(std::make_shared<Detail::FixedText>(to_utf8({c}))) {}
 
     std::string TextGen::operator()(StdRng& rng) const {
-        if (base_)
-            return base_->gen(rng);
-        else
+        if (! base_)
             return {};
+        auto text = base_->gen(rng);
+        if (!! (options_ & option::lower))
+            text = ascii_lowercase(text);
+        else if (!! (options_ & option::upper))
+            text = ascii_uppercase(text);
+        else if (!! (options_ & option::title))
+            text = ascii_titlecase(text);
+        else if (!! (options_ & option::xtitle))
+            text = extended_titlecase(text);
+        else if (!! (options_ & option::sentence))
+            text = sentence_case(text);
+        return text;
+    }
+
+    void TextGen::set(option opt) {
+        static constexpr auto case_options = option::lower | option::upper | option::title | option::xtitle | option::sentence;
+        if (popcount(int(opt & case_options)) > 1)
+            throw std::invalid_argument("Invalid combination of options for text generator");
+        options_ = opt;
     }
 
     TextGen TextGen::number(int min, int max) {

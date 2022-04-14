@@ -48,6 +48,7 @@ int main(int argc, char** argv) {
     UNIT_TEST(rs_game_text_generation_optional)
     UNIT_TEST(rs_game_text_generation_repeat)
     UNIT_TEST(rs_game_text_generation_transform)
+    UNIT_TEST(rs_game_text_generation_casing)
     UNIT_TEST(rs_game_text_generation_literals)
 
     // version-test.cpp

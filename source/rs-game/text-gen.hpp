@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-sci/random.hpp"
+#include "rs-tl/enum.hpp"
 #include <functional>
 #include <initializer_list>
 #include <memory>
@@ -38,6 +39,15 @@ namespace RS::Game {
 
         using result_type = std::string;
 
+        enum class option: int {
+            none      = 0,
+            lower     = 1,
+            upper     = 2,
+            title     = 4,
+            xtitle    = 8,
+            sentence  = 16,
+        };
+
         TextGen() = default;
         TextGen(const std::string& str);
         TextGen(const std::string_view& str): TextGen(std::string(str)) {}
@@ -46,6 +56,8 @@ namespace RS::Game {
         TextGen(char32_t c);
 
         std::string operator()(Sci::StdRng& rng) const;
+
+        void set(option opt);
 
         static TextGen number(int min, int max);
         static TextGen choice(const std::string& list);
@@ -61,8 +73,11 @@ namespace RS::Game {
         friend Detail::SharedBase Detail::gen2base(const TextGen& g);
 
         Detail::SharedBase base_;
+        option options_ = option::none;
 
     };
+
+    RS_DEFINE_BITMASK_OPERATORS(TextGen::option)
 
     namespace Detail {
 
