@@ -15,11 +15,12 @@ namespace RS::Game;
 ## Case conversion functions
 
 ```c++
-std::string extended_titlecase(const std::string& str);
+std::string extended_titlecase(const std::string& str, bool initial = true);
 ```
 
 Convert a string to title case, checking for common short English words that
-are conventionally set in lower case.
+are conventionally set in lower case. If the `initial` flag is set, the first
+letter of the string will always be in upper case.
 
 ```c++
 std::string sentence_case(const std::string& str);

@@ -13,7 +13,7 @@ namespace RS::Game {
 
     // Case conversion functions
 
-    std::string extended_titlecase(const std::string& str) {
+    std::string extended_titlecase(const std::string& str, bool initial) {
 
         static const std::unordered_set<std::string> stopwords = {
             "a", "an", "and", "at", "in", "of", "or", "the"
@@ -42,7 +42,7 @@ namespace RS::Game {
             word = ascii_lowercase(word);
             ++words;
 
-            if (words == 1 || stopwords.count(word) == 0)
+            if ((words == 1 && initial) || stopwords.count(word) == 0)
                 word[0] = ascii_toupper(word[0]);
 
             result += word;

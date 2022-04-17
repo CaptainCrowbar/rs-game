@@ -9,7 +9,7 @@ namespace RS::Game {
 
     // Case conversion functions
 
-    std::string extended_titlecase(const std::string& str);
+    std::string extended_titlecase(const std::string& str, bool initial = true);
     std::string sentence_case(const std::string& str);
 
     // List formatting functions

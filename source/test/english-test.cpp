@@ -10,13 +10,20 @@ using namespace RS::Game;
 
 void test_rs_game_english_extended_titlecase() {
 
-    TEST_EQUAL(extended_titlecase(""),                            "");
-    TEST_EQUAL(extended_titlecase("hello world"),                 "Hello World");
-    TEST_EQUAL(extended_titlecase("doctor who and the daleks"),   "Doctor Who and the Daleks");
-    TEST_EQUAL(extended_titlecase("the haunting of hill house"),  "The Haunting of Hill House");
-    TEST_EQUAL(extended_titlecase("a history of the future"),     "A History of the Future");
-    TEST_EQUAL(extended_titlecase("a dog in the manger"),         "A Dog in the Manger");
-    TEST_EQUAL(extended_titlecase("wolf-rayet star's spectrum"),  "Wolf-Rayet Star's Spectrum");
+    TEST_EQUAL(extended_titlecase(""),                                   "");
+    TEST_EQUAL(extended_titlecase("hello world"),                        "Hello World");
+    TEST_EQUAL(extended_titlecase("doctor who and the daleks"),          "Doctor Who and the Daleks");
+    TEST_EQUAL(extended_titlecase("the haunting of hill house"),         "The Haunting of Hill House");
+    TEST_EQUAL(extended_titlecase("a history of the future"),            "A History of the Future");
+    TEST_EQUAL(extended_titlecase("a dog in the manger"),                "A Dog in the Manger");
+    TEST_EQUAL(extended_titlecase("wolf-rayet star's spectrum"),         "Wolf-Rayet Star's Spectrum");
+    TEST_EQUAL(extended_titlecase("", false),                            "");
+    TEST_EQUAL(extended_titlecase("hello world", false),                 "Hello World");
+    TEST_EQUAL(extended_titlecase("doctor who and the daleks", false),   "Doctor Who and the Daleks");
+    TEST_EQUAL(extended_titlecase("the haunting of hill house", false),  "the Haunting of Hill House");
+    TEST_EQUAL(extended_titlecase("a history of the future", false),     "a History of the Future");
+    TEST_EQUAL(extended_titlecase("a dog in the manger", false),         "a Dog in the Manger");
+    TEST_EQUAL(extended_titlecase("wolf-rayet star's spectrum", false),  "Wolf-Rayet Star's Spectrum");
 
 }
 
