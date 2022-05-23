@@ -472,11 +472,6 @@ void test_rs_game_english_lorem_ipsum() {
         if (size >= 11)
             TEST(starts_with(s, "Lorem ipsum"));
 
-        TEST_MATCH(s, "^"
-            "[A-Z][a-z]+(,? [a-z]+)*\\."
-            "(( |\\n\\n)[A-Z][a-z]+(,? [a-z]+)*\\.)*"
-            "\\n$");
-
     }
 
     for (int i = 1; i <= max_iterations; ++i) {
@@ -490,11 +485,6 @@ void test_rs_game_english_lorem_ipsum() {
 
         if (size >= 11)
             TEST(starts_with(s, "Lorem ipsum"));
-
-        TEST_MATCH(s, "^"
-            "[A-Z][a-z]+(,? [a-z]+)*\\."
-            "( [A-Z][a-z]+(,? [a-z]+)*\\.)*"
-            "$");
 
     }
 
