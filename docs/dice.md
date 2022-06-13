@@ -7,6 +7,11 @@ _[Game Library by Ross Smith](index.html)_
 namespace RS::Game;
 ```
 
+## Contents
+
+* TOC
+{:toc}
+
 ## Dice class
 
 ```c++
@@ -37,16 +42,10 @@ Dice::Dice() noexcept;
 Creates a null dice roller, which always yields zero.
 
 ```c++
-explicit Dice::Dice(int n);
+Dice::Dice(int n, int faces = 6, const Sci::Rational& factor = 1);
 ```
 
-Creates a `Dice` object that rolls `n` six-sided dice.
-
-```c++
-Dice::Dice(int n, int faces, const Sci::Rational& factor = 1);
-```
-
-Creates an object that rolls `n` dice, each numbered from 1 to `faces`,
+Creates a `Dice` object that rolls `n` dice, each numbered from 1 to `faces`,
 optionally multiplying the result by `factor`. This will produce a null
 (always zero) dice roller if any of the arguments is zero; it will throw
 `std::invalid_argument` if `n` or `faces` is negative.
@@ -172,6 +171,49 @@ constructor. Because the string is being reconstructed from the stored
 properties of the distribution, the result may not exactly match the original
 string supplied to the constructor, but will be functionally equivalent.
 
+## IntDice class
+
+```c++
+class IntDice {
+    using result_type = int;
+    IntDice();
+    explicit IntDice(int n, int faces = 6, int factor = 1);
+    explicit IntDice(const std::string& str);
+    IntDice(const IntDice& d);
+    IntDice(IntDice&& d) noexcept;
+    ~IntDice() noexcept;
+    IntDice& operator=(const IntDice& d);
+    IntDice& operator=(IntDice&& d) noexcept;
+    template <typename RNG> int operator()(RNG& rng) const;
+    IntDice operator+() const;
+    IntDice operator-() const;
+    IntDice& operator+=(const IntDice& b);
+    IntDice& operator+=(int b);
+    IntDice& operator-=(const IntDice& b);
+    IntDice& operator-=(int b);
+    IntDice& operator*=(int b);
+    IntDice& operator/=(int b);
+    int min() const noexcept;
+    int max() const noexcept;
+    std::string str() const;
+};
+IntDice operator+(const IntDice& a, const IntDice& b);
+IntDice operator+(const IntDice& a, int b);
+IntDice operator+(int a, const IntDice& b);
+IntDice operator-(const IntDice& a, const IntDice& b);
+IntDice operator-(const IntDice& a, int b);
+IntDice operator-(int a, const IntDice& b);
+IntDice operator*(const IntDice& a, int b);
+IntDice operator*(int a, const IntDice& b);
+IntDice operator/(const IntDice& a, int b);
+std::ostream& operator<<(std::ostream& out, const IntDice& d);
+```
+
+This class works the same as `Dice`, except that the result is rounded down to
+an integer.
+
+## Literals
+
 ```c++
 namespace Literals {
     Dice operator""_d3(unsigned long long n);
@@ -185,11 +227,22 @@ namespace Literals {
     Dice operator""_d100(unsigned long long n);
     Dice operator""_d1000(unsigned long long n);
     Dice operator""_dice(const char* p, size_t n);
+    IntDice operator""_id3(unsigned long long n);
+    IntDice operator""_id4(unsigned long long n);
+    IntDice operator""_id6(unsigned long long n);
+    IntDice operator""_id8(unsigned long long n);
+    IntDice operator""_id10(unsigned long long n);
+    IntDice operator""_id12(unsigned long long n);
+    IntDice operator""_id20(unsigned long long n);
+    IntDice operator""_id30(unsigned long long n);
+    IntDice operator""_id100(unsigned long long n);
+    IntDice operator""_id1000(unsigned long long n);
+    IntDice operator""_idice(const char* p, size_t n);
 }
 ```
 
 Literals for some commonly used dice. For example, `3_d6` is equivalent to
 `Dice(3,6)` or `Dice("3d6")`.
 
-The `_dice` literal suffix calls the string-based constructor; for example,
+The `_[i]dice` literal suffix calls the string-based constructor; for example,
 `"3d6"_dice` is equivalent to `Dice(3,6)` or `Dice("3d6")`.

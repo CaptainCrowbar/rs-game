@@ -28,89 +28,89 @@ void test_rs_game_dice_arithmetic() {
 
 void test_rs_game_dice_statistics() {
 
-    Dice dice;
+    Dice d;
 
-    TEST_EQUAL(dice.min(), 0);
-    TEST_EQUAL(dice.max(), 0);
-    TEST_EQUAL(dice.mean(), 0);
-    TEST_EQUAL(dice.sd(), 0);
-    TEST_EQUAL(dice.str(), "0");
+    TEST_EQUAL(d.min(), 0);
+    TEST_EQUAL(d.max(), 0);
+    TEST_EQUAL(d.mean(), 0);
+    TEST_EQUAL(d.sd(), 0);
+    TEST_EQUAL(d.str(), "0");
 
-    TRY(dice += 5);
-    TEST_EQUAL(dice.min(), 5);
-    TEST_EQUAL(dice.max(), 5);
-    TEST_EQUAL(dice.mean(), 5);
-    TEST_EQUAL(dice.sd(), 0);
-    TEST_EQUAL(dice.str(), "5");
+    TRY(d += 5);
+    TEST_EQUAL(d.min(), 5);
+    TEST_EQUAL(d.max(), 5);
+    TEST_EQUAL(d.mean(), 5);
+    TEST_EQUAL(d.sd(), 0);
+    TEST_EQUAL(d.str(), "5");
 
-    TRY(dice += Dice(2, 6));
-    TEST_EQUAL(dice.min(), 7);
-    TEST_EQUAL(dice.max(), 17);
-    TEST_EQUAL(dice.mean(), 12);
-    TEST_NEAR(dice.sd(), 2.415229, 1e-6);
-    TEST_EQUAL(dice.str(), "2d6+5");
+    TRY(d += Dice(2, 6));
+    TEST_EQUAL(d.min(), 7);
+    TEST_EQUAL(d.max(), 17);
+    TEST_EQUAL(d.mean(), 12);
+    TEST_NEAR(d.sd(), 2.415229, 1e-6);
+    TEST_EQUAL(d.str(), "2d6+5");
 
-    TRY(dice -= 10);
-    TEST_EQUAL(dice.min(), -3);
-    TEST_EQUAL(dice.max(), 7);
-    TEST_EQUAL(dice.mean(), 2);
-    TEST_NEAR(dice.sd(), 2.415229, 1e-6);
-    TEST_EQUAL(dice.str(), "2d6-5");
+    TRY(d -= 10);
+    TEST_EQUAL(d.min(), -3);
+    TEST_EQUAL(d.max(), 7);
+    TEST_EQUAL(d.mean(), 2);
+    TEST_NEAR(d.sd(), 2.415229, 1e-6);
+    TEST_EQUAL(d.str(), "2d6-5");
 
-    TRY(dice -= Dice(2, 10));
-    TEST_EQUAL(dice.min(), -23);
-    TEST_EQUAL(dice.max(), 5);
-    TEST_EQUAL(dice.mean(), -9);
-    TEST_NEAR(dice.sd(), 4.725816, 1e-6);
-    TEST_EQUAL(dice.str(), "-2d10+2d6-5");
+    TRY(d -= Dice(2, 10));
+    TEST_EQUAL(d.min(), -23);
+    TEST_EQUAL(d.max(), 5);
+    TEST_EQUAL(d.mean(), -9);
+    TEST_NEAR(d.sd(), 4.725816, 1e-6);
+    TEST_EQUAL(d.str(), "-2d10+2d6-5");
 
 }
 
 void test_rs_game_dice_parser() {
 
-    Dice dice;
+    Dice d;
 
-    TRY(dice = Dice(""));
-    TEST_EQUAL(dice.str(), "0");
-    TEST_EQUAL(dice.min(), 0);
-    TEST_EQUAL(dice.max(), 0);
-    TEST_EQUAL(dice.mean(), 0);
-    TEST_EQUAL(dice.sd(), 0);
+    TRY(d = Dice(""));
+    TEST_EQUAL(d.str(), "0");
+    TEST_EQUAL(d.min(), 0);
+    TEST_EQUAL(d.max(), 0);
+    TEST_EQUAL(d.mean(), 0);
+    TEST_EQUAL(d.sd(), 0);
 
-    TRY(dice = Dice("5"));
-    TEST_EQUAL(dice.str(), "5");
-    TEST_EQUAL(dice.min(), 5);
-    TEST_EQUAL(dice.max(), 5);
-    TEST_EQUAL(dice.mean(), 5);
-    TEST_EQUAL(dice.sd(), 0);
+    TRY(d = Dice("5"));
+    TEST_EQUAL(d.str(), "5");
+    TEST_EQUAL(d.min(), 5);
+    TEST_EQUAL(d.max(), 5);
+    TEST_EQUAL(d.mean(), 5);
+    TEST_EQUAL(d.sd(), 0);
 
-    TRY(dice = Dice("2d6"));
-    TEST_EQUAL(dice.str(), "2d6");
-    TEST_EQUAL(dice.min(), 2);
-    TEST_EQUAL(dice.max(), 12);
-    TEST_EQUAL(dice.mean(), 7);
-    TEST_NEAR(dice.sd(), 2.415229, 1e-6);
+    TRY(d = Dice("2d6"));
+    TEST_EQUAL(d.str(), "2d6");
+    TEST_EQUAL(d.min(), 2);
+    TEST_EQUAL(d.max(), 12);
+    TEST_EQUAL(d.mean(), 7);
+    TEST_NEAR(d.sd(), 2.415229, 1e-6);
 
-    TRY(dice = Dice("2d10+2d6+10"));
-    TEST_EQUAL(dice.str(), "2d10+2d6+10");
-    TEST_EQUAL(dice.min(), 14);
-    TEST_EQUAL(dice.max(), 42);
-    TEST_EQUAL(dice.mean(), 28);
-    TEST_NEAR(dice.sd(), 4.725816, 1e-6);
+    TRY(d = Dice("2d10+2d6+10"));
+    TEST_EQUAL(d.str(), "2d10+2d6+10");
+    TEST_EQUAL(d.min(), 14);
+    TEST_EQUAL(d.max(), 42);
+    TEST_EQUAL(d.mean(), 28);
+    TEST_NEAR(d.sd(), 4.725816, 1e-6);
 
-    TRY(dice = Dice("2d10-2d6+10"));
-    TEST_EQUAL(dice.str(), "2d10-2d6+10");
-    TEST_EQUAL(dice.min(), 0);
-    TEST_EQUAL(dice.max(), 28);
-    TEST_EQUAL(dice.mean(), 14);
-    TEST_NEAR(dice.sd(), 4.725816, 1e-6);
+    TRY(d = Dice("2d10-2d6+10"));
+    TEST_EQUAL(d.str(), "2d10-2d6+10");
+    TEST_EQUAL(d.min(), 0);
+    TEST_EQUAL(d.max(), 28);
+    TEST_EQUAL(d.mean(), 14);
+    TEST_NEAR(d.sd(), 4.725816, 1e-6);
 
-    TRY(dice = Dice(" 3*2d10 - 2d6/4 + d8*6/8 + 10\n"));
-    TEST_EQUAL(dice.str(), "2d10*3+d8*3/4-2d6/4+10");
-    TEST_EQUAL(dice.min(), Rational(55,4));
-    TEST_EQUAL(dice.max(), Rational(151,2));
-    TEST_EQUAL(dice.mean(), Rational(357,8));
-    TEST_NEAR(dice.sd(), 12.321433, 1e-6);
+    TRY(d = Dice(" 3*2d10 - 2d6/4 + d8*6/8 + 10\n"));
+    TEST_EQUAL(d.str(), "2d10*3+d8*3/4-2d6/4+10");
+    TEST_EQUAL(d.min(), Rational(55,4));
+    TEST_EQUAL(d.max(), Rational(151,2));
+    TEST_EQUAL(d.mean(), Rational(357,8));
+    TEST_NEAR(d.sd(), 12.321433, 1e-6);
 
 }
 
@@ -119,59 +119,65 @@ void test_rs_game_dice_generation() {
     static constexpr int iterations = 100'000;
     static constexpr double tolerance = 0.05;
 
-    Dice dice;
+    Dice d;
     std::minstd_rand rng(42);
     Statistics<double> stats;
     Rational x;
 
     stats = {};
-    TRY(dice = Dice(2, 6));
+    TRY(d = Dice(2, 6));
+
     for (int i = 0; i < iterations; ++i) {
-        TRY(x = dice(rng));
+        TRY(x = d(rng));
         TRY(stats(double(x)));
     }
-    TEST_EQUAL(stats.min(), double(dice.min()));
-    TEST_EQUAL(stats.max(), double(dice.max()));
-    TEST_NEAR(stats.mean(), double(dice.mean()), tolerance);
-    TEST_NEAR(stats.sd(), dice.sd(), tolerance);
+
+    TEST_EQUAL(stats.min(), double(d.min()));
+    TEST_EQUAL(stats.max(), double(d.max()));
+    TEST_NEAR(stats.mean(), double(d.mean()), tolerance);
+    TEST_NEAR(stats.sd(), d.sd(), tolerance);
 
     stats = {};
-    TRY(dice = Dice("2d6"));
+    TRY(d = Dice("2d6"));
+
     for (int i = 0; i < iterations; ++i) {
-        TRY(x = dice(rng));
+        TRY(x = d(rng));
         TRY(stats(double(x)));
     }
-    TEST_EQUAL(stats.min(), double(dice.min()));
-    TEST_EQUAL(stats.max(), double(dice.max()));
-    TEST_NEAR(stats.mean(), double(dice.mean()), tolerance);
-    TEST_NEAR(stats.sd(), dice.sd(), tolerance);
+
+    TEST_EQUAL(stats.min(), double(d.min()));
+    TEST_EQUAL(stats.max(), double(d.max()));
+    TEST_NEAR(stats.mean(), double(d.mean()), tolerance);
+    TEST_NEAR(stats.sd(), d.sd(), tolerance);
 
     stats = {};
-    TRY(dice = Dice("2d10-2d6+10"));
+    TRY(d = Dice("2d10-2d6+10"));
+
     for (int i = 0; i < iterations; ++i) {
-        TRY(x = dice(rng));
+        TRY(x = d(rng));
         TRY(stats(double(x)));
     }
-    TEST_EQUAL(stats.min(), double(dice.min()));
-    TEST_EQUAL(stats.max(), double(dice.max()));
-    TEST_NEAR(stats.mean(), double(dice.mean()), tolerance);
-    TEST_NEAR(stats.sd(), dice.sd(), tolerance);
+
+    TEST_EQUAL(stats.min(), double(d.min()));
+    TEST_EQUAL(stats.max(), double(d.max()));
+    TEST_NEAR(stats.mean(), double(d.mean()), tolerance);
+    TEST_NEAR(stats.sd(), d.sd(), tolerance);
 
 }
 
 void test_rs_game_dice_literals() {
 
-    Dice dice;
+    Dice d;
 
-    TRY(dice = 5_d4);         TEST_EQUAL(dice.str(), "5d4");
-    TRY(dice = 5_d6);         TEST_EQUAL(dice.str(), "5d6");
-    TRY(dice = 5_d8);         TEST_EQUAL(dice.str(), "5d8");
-    TRY(dice = 5_d10);        TEST_EQUAL(dice.str(), "5d10");
-    TRY(dice = 5_d12);        TEST_EQUAL(dice.str(), "5d12");
-    TRY(dice = 5_d20);        TEST_EQUAL(dice.str(), "5d20");
-    TRY(dice = 5_d100);       TEST_EQUAL(dice.str(), "5d100");
-    TRY(dice = "5d"_dice);    TEST_EQUAL(dice.str(), "5d6");
-    TRY(dice = "5d20"_dice);  TEST_EQUAL(dice.str(), "5d20");
+    TRY(d = 5_d4);         TEST_EQUAL(d.str(), "5d4");
+    TRY(d = 5_d6);         TEST_EQUAL(d.str(), "5d6");
+    TRY(d = 5_d8);         TEST_EQUAL(d.str(), "5d8");
+    TRY(d = 5_d10);        TEST_EQUAL(d.str(), "5d10");
+    TRY(d = 5_d12);        TEST_EQUAL(d.str(), "5d12");
+    TRY(d = 5_d20);        TEST_EQUAL(d.str(), "5d20");
+    TRY(d = 5_d100);       TEST_EQUAL(d.str(), "5d100");
+    TRY(d = "5d"_dice);    TEST_EQUAL(d.str(), "5d6");
+    TRY(d = "5d20"_dice);  TEST_EQUAL(d.str(), "5d20");
 
 }
 
@@ -243,5 +249,154 @@ void test_rs_game_dice_pdf() {
     TEST_EQUAL(d.interval(4, 8),    Rational(102, 360));
     TEST_EQUAL(d.interval(8, 16),   Rational(258, 360));
     TEST_EQUAL(d.interval(16, 32),  Rational(35, 360));
+
+}
+
+void test_rs_game_dice_integer_arithmetic() {
+
+    IntDice a, b, c;
+
+    TRY(a = IntDice(2, 6));
+    TRY(b = IntDice(3, 10));
+
+    TRY(c = a * 3);      TEST_EQUAL(c.str(), "2d6*3");
+    TRY(c = a / 3);      TEST_EQUAL(c.str(), "2d6/3");
+    TRY(c = a * 2 / 3);  TEST_EQUAL(c.str(), "2d6*2/3");
+    TRY(c = a + b);      TEST_EQUAL(c.str(), "3d10+2d6");
+    TRY(c = a - b);      TEST_EQUAL(c.str(), "-3d10+2d6");
+    TRY(c = b - a);      TEST_EQUAL(c.str(), "3d10-2d6");
+
+}
+
+void test_rs_game_dice_integer_statistics() {
+
+    IntDice d;
+
+    TEST_EQUAL(d.min(), 0);
+    TEST_EQUAL(d.max(), 0);
+    TEST_EQUAL(d.str(), "0");
+
+    TRY(d += 5);
+    TEST_EQUAL(d.min(), 5);
+    TEST_EQUAL(d.max(), 5);
+    TEST_EQUAL(d.str(), "5");
+
+    TRY(d += IntDice(2, 6));
+    TEST_EQUAL(d.min(), 7);
+    TEST_EQUAL(d.max(), 17);
+    TEST_EQUAL(d.str(), "2d6+5");
+
+    TRY(d -= 10);
+    TEST_EQUAL(d.min(), -3);
+    TEST_EQUAL(d.max(), 7);
+    TEST_EQUAL(d.str(), "2d6-5");
+
+    TRY(d -= IntDice(2, 10));
+    TEST_EQUAL(d.min(), -23);
+    TEST_EQUAL(d.max(), 5);
+    TEST_EQUAL(d.str(), "-2d10+2d6-5");
+
+}
+
+void test_rs_game_dice_integer_parser() {
+
+    IntDice d;
+
+    TRY(d = IntDice(""));
+    TEST_EQUAL(d.str(), "0");
+    TEST_EQUAL(d.min(), 0);
+    TEST_EQUAL(d.max(), 0);
+
+    TRY(d = IntDice("5"));
+    TEST_EQUAL(d.str(), "5");
+    TEST_EQUAL(d.min(), 5);
+    TEST_EQUAL(d.max(), 5);
+
+    TRY(d = IntDice("2d6"));
+    TEST_EQUAL(d.str(), "2d6");
+    TEST_EQUAL(d.min(), 2);
+    TEST_EQUAL(d.max(), 12);
+
+    TRY(d = IntDice("2d10+2d6+10"));
+    TEST_EQUAL(d.str(), "2d10+2d6+10");
+    TEST_EQUAL(d.min(), 14);
+    TEST_EQUAL(d.max(), 42);
+
+    TRY(d = IntDice("2d10-2d6+10"));
+    TEST_EQUAL(d.str(), "2d10-2d6+10");
+    TEST_EQUAL(d.min(), 0);
+    TEST_EQUAL(d.max(), 28);
+
+    TRY(d = IntDice(" 3*2d10 - 2d6/4 + d8*6/8 + 10\n"));
+    TEST_EQUAL(d.str(), "2d10*3+d8*3/4-2d6/4+10");
+    TEST_EQUAL(d.min(), 13);
+    TEST_EQUAL(d.max(), 75);
+
+}
+
+void test_rs_game_dice_integer_generation() {
+
+    static constexpr int iterations = 100'000;
+    static constexpr double tolerance = 0.05;
+
+    IntDice d;
+    std::minstd_rand rng(42);
+    Statistics<double> stats;
+    int x;
+
+    stats = {};
+    TRY(d = IntDice(2, 6));
+
+    for (int i = 0; i < iterations; ++i) {
+        TRY(x = d(rng));
+        TRY(stats(double(x)));
+    }
+
+    TEST_EQUAL(stats.min(), d.min());
+    TEST_EQUAL(stats.max(), d.max());
+    TEST_NEAR(stats.mean(), 7, tolerance);
+    TEST_NEAR(stats.sd(), 2.415229, tolerance);
+
+    stats = {};
+    TRY(d = IntDice("2d6"));
+
+    for (int i = 0; i < iterations; ++i) {
+        TRY(x = d(rng));
+        TRY(stats(double(x)));
+    }
+
+    TEST_EQUAL(stats.min(), d.min());
+    TEST_EQUAL(stats.max(), d.max());
+    TEST_NEAR(stats.mean(), 7, tolerance);
+    TEST_NEAR(stats.sd(), 2.415229, tolerance);
+
+    stats = {};
+    TRY(d = IntDice("2d10-2d6+10"));
+
+    for (int i = 0; i < iterations; ++i) {
+        TRY(x = d(rng));
+        TRY(stats(double(x)));
+    }
+
+    TEST_EQUAL(stats.min(), d.min());
+    TEST_EQUAL(stats.max(), d.max());
+    TEST_NEAR(stats.mean(), 14, tolerance);
+    TEST_NEAR(stats.sd(), 4.725816, tolerance);
+
+}
+
+void test_rs_game_dice_integer_literals() {
+
+    IntDice d;
+
+    TRY(d = 5_id4);         TEST_EQUAL(d.str(), "5d4");
+    TRY(d = 5_id6);         TEST_EQUAL(d.str(), "5d6");
+    TRY(d = 5_id8);         TEST_EQUAL(d.str(), "5d8");
+    TRY(d = 5_id10);        TEST_EQUAL(d.str(), "5d10");
+    TRY(d = 5_id12);        TEST_EQUAL(d.str(), "5d12");
+    TRY(d = 5_id20);        TEST_EQUAL(d.str(), "5d20");
+    TRY(d = 5_id100);       TEST_EQUAL(d.str(), "5d100");
+    TRY(d = "5d"_idice);    TEST_EQUAL(d.str(), "5d6");
+    TRY(d = "5d20"_idice);  TEST_EQUAL(d.str(), "5d20");
 
 }

@@ -19,8 +19,7 @@ namespace RS::Game {
         using result_type = Sci::Rational;
 
         Dice() = default;
-        explicit Dice(int n) { insert(n, 6, 1); modified(); }
-        Dice(int n, int faces, const Sci::Rational& factor = 1) { insert(n, faces, factor); modified(); }
+        explicit Dice(int n, int faces = 6, const Sci::Rational& factor = 1) { insert(n, faces, factor); modified(); }
         explicit Dice(const std::string& str);
 
         template <typename RNG> Sci::Rational operator()(RNG& rng) const;
@@ -99,6 +98,37 @@ namespace RS::Game {
             return sum;
         }
 
+    class IntDice {
+
+    public:
+
+        using result_type = int;
+
+        IntDice() = default;
+        explicit IntDice(int n, int faces = 6, int factor = 1): rdice_(n, faces, factor) {}
+        explicit IntDice(const std::string& str): rdice_(str) {}
+
+        template <typename RNG> int operator()(RNG& rng) const { return rdice_(rng).floor(); }
+
+        IntDice operator+() const { return *this; }
+        IntDice operator-() const { IntDice d; d.rdice_ = - rdice_; return d; }
+        IntDice& operator+=(const IntDice& b) { rdice_ += b.rdice_; return *this; }
+        IntDice& operator+=(int b) { rdice_ += b; return *this; }
+        IntDice& operator-=(const IntDice& b) { rdice_ -= b.rdice_; return *this; }
+        IntDice& operator-=(int b) { rdice_ -= b; return *this; }
+        IntDice& operator*=(int b) { rdice_ *= b; return *this; }
+        IntDice& operator/=(int b) { rdice_ /= b; return *this; }
+
+        int min() const noexcept { return rdice_.min().floor(); }
+        int max() const noexcept { return rdice_.max().floor(); }
+        std::string str() const { return rdice_.str(); }
+
+    private:
+
+        Dice rdice_;
+
+    };
+
     inline Dice operator+(const Dice& a, const Dice& b) { auto d = a; d += b; return d; }
     inline Dice operator+(const Dice& a, const Sci::Rational& b) { auto d = a; d += b; return d; }
     inline Dice operator+(const Dice& a, int b) { auto d = a; d += b; return d; }
@@ -115,7 +145,19 @@ namespace RS::Game {
     inline Dice operator*(int a, const Dice& b) { auto d = b; d *= a; return d; }
     inline Dice operator/(const Dice& a, const Sci::Rational& b) { auto d = a; d /= b; return d; }
     inline Dice operator/(const Dice& a, int b) { auto d = a; d /= b; return d; }
+
+    inline IntDice operator+(const IntDice& a, const IntDice& b) { auto d = a; d += b; return d; }
+    inline IntDice operator+(const IntDice& a, int b) { auto d = a; d += b; return d; }
+    inline IntDice operator+(int a, const IntDice& b) { auto d = b; d += a; return d; }
+    inline IntDice operator-(const IntDice& a, const IntDice& b) { auto d = a; d -= b; return d; }
+    inline IntDice operator-(const IntDice& a, int b) { auto d = a; d -= b; return d; }
+    inline IntDice operator-(int a, const IntDice& b) { auto d = - b; d += a; return d; }
+    inline IntDice operator*(const IntDice& a, int b) { auto d = a; d *= b; return d; }
+    inline IntDice operator*(int a, const IntDice& b) { auto d = b; d *= a; return d; }
+    inline IntDice operator/(const IntDice& a, int b) { auto d = a; d /= b; return d; }
+
     inline std::ostream& operator<<(std::ostream& out, const Dice& d) { return out << d.str(); }
+    inline std::ostream& operator<<(std::ostream& out, const IntDice& d) { return out << d.str(); }
 
     namespace Literals {
 
@@ -130,6 +172,18 @@ namespace RS::Game {
         inline Dice operator""_d100(unsigned long long n) { return Dice(int(n), 100); }
         inline Dice operator""_d1000(unsigned long long n) { return Dice(int(n), 1000); }
         inline Dice operator""_dice(const char* p, size_t n) { return Dice(std::string(p, n)); }
+
+        inline IntDice operator""_id3(unsigned long long n) { return IntDice(int(n), 3); }
+        inline IntDice operator""_id4(unsigned long long n) { return IntDice(int(n), 4); }
+        inline IntDice operator""_id6(unsigned long long n) { return IntDice(int(n), 6); }
+        inline IntDice operator""_id8(unsigned long long n) { return IntDice(int(n), 8); }
+        inline IntDice operator""_id10(unsigned long long n) { return IntDice(int(n), 10); }
+        inline IntDice operator""_id12(unsigned long long n) { return IntDice(int(n), 12); }
+        inline IntDice operator""_id20(unsigned long long n) { return IntDice(int(n), 20); }
+        inline IntDice operator""_id30(unsigned long long n) { return IntDice(int(n), 30); }
+        inline IntDice operator""_id100(unsigned long long n) { return IntDice(int(n), 100); }
+        inline IntDice operator""_id1000(unsigned long long n) { return IntDice(int(n), 1000); }
+        inline IntDice operator""_idice(const char* p, size_t n) { return IntDice(std::string(p, n)); }
 
     }
 

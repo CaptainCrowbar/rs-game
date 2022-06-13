@@ -13,6 +13,11 @@ int main(int argc, char** argv) {
     UNIT_TEST(rs_game_dice_generation)
     UNIT_TEST(rs_game_dice_literals)
     UNIT_TEST(rs_game_dice_pdf)
+    UNIT_TEST(rs_game_dice_integer_arithmetic)
+    UNIT_TEST(rs_game_dice_integer_statistics)
+    UNIT_TEST(rs_game_dice_integer_parser)
+    UNIT_TEST(rs_game_dice_integer_generation)
+    UNIT_TEST(rs_game_dice_integer_literals)
 
     // english-test.cpp
     UNIT_TEST(rs_game_english_extended_titlecase)
